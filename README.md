@@ -1,6 +1,8 @@
 # eKW-pobieracz
 Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.gov.pl
 
+!wymagane posiadanie przeglądarki Google Chrome!
+
 	Do poprawnego działania program potrzebuje istneijącego numeru księgi wieczystej w formacie AA1A/NNNNNNNN/K, 
 	gdzie:
 		AA1A - oznaczenie sądu
