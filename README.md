@@ -14,9 +14,9 @@ Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.go
  	AA1A.NNNNNNNN.K_d.pdf
 	
 	Funkcje, które będą wporwadzane sukcesywnie:
-		*	Generowanie listy dostępnych KW w danym sądzie rejonowym
+		*	Generowanie listy dostępnych KW w danym sądzie rejonowym (dodano 20.06.2024)
 		*	Zapis do jednego połączonego pliku
 		*	Tryb turbo (wiele ksiąg zapisywanych na raz)
 		
 	Jeśli brakuje jakiejś funkcji, a chciałbyś ją zobaczyć w programie to zapraszam do kontaktu.
-![image](https://github.com/Rzezimioszek/eKW-pobieracz/assets/105981729/7dd44041-30f8-4c23-8bd9-709f62e8a41c)
+![image](https://github.com/Rzezimioszek/eKW-pobieracz/assets/105981729/a22d714a-8970-4b19-a0a7-cf535de1c79b)
