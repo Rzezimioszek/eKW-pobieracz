@@ -3,13 +3,15 @@ Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.go
 
 !wymagane posiadanie przeglądarki Google Chrome!
 
-	Do poprawnego działania program potrzebuje istneijącego numeru księgi wieczystej w formacie AA1A/NNNNNNNN/K, 
+	Do poprawnego działania program potrzebuje istneijącego numeru księgi wieczystej w formacie 
+ 	AA1A/NNNNNNNN/K, 
 	gdzie:
 		AA1A - oznaczenie sądu
 		NNNNNNNN - numer księgi
 		K - cyfra kontrolna
 	Lista powinna znajdować się w pliku tekstowym w którym każda księga zaczyna się od nowej linii.
-	Miejscem zapisu jest folder, gdzie zostaną zapisane księgi (podzielone na działy) w postaci: AA1A.NNNNNNNN.K_d.pdf
+	Miejscem zapisu jest folder, gdzie zostaną zapisane księgi (podzielone na działy) w postaci: 
+ 	AA1A.NNNNNNNN.K_d.pdf
 	
 	Funkcje, które będą wporwadzane sukcesywnie:
 		*	Generowanie listy dostępnych KW w danym sądzie rejonowym
