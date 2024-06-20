@@ -27,8 +27,8 @@ from eKW_pobieracz_ui import Ui_MainWindow
 
 # #### ##
 
-# eKW pobieracz 0.1
-eKWp_ver = "0.1"
+# eKW pobieracz 0.3
+eKWp_ver = "0.3"
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -62,22 +62,140 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.pdf_bg = self.chBg.isChecked()
 
+        self.sady = []
+        if os.path.exists('sady.kw'):
+            # print("Exists")
+            with open('sady.kw', 'r') as file:
+                lines = file.readlines()
+            self.sady = [x.replace("\n","") for x in lines]
+
+        self.rep_dict = {"X": "10", "A": "11", "B": "12", "C": "13", "D": "14", "E": "15",
+                        "F": "16", "G": "17", "H": "18", "I": "19", "J": "20", "K": "21",
+                        "L": "22", "M": "23", "N": "24", "O": "25", "P": "26", "R": "27",
+                        "S": "28", "T": "29", "U": "30", "W": "31", "Y": "32", "Z": "33",
+                        "0":"0", "1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9"}
+
 
 
 
 
     def connectSignalsSlots(self):
+
         self.btnRun.clicked.connect(self.run_by_list)
+
         self.btnList.clicked.connect(self.open_file)
         self.btnSave.clicked.connect(self.open_dir)
+
+        self.btnGen.clicked.connect(self.generate_kws)
+        self.btnGenSave.clicked.connect(lambda x: self.generate_kws(True))
+
+
         self.action_github.triggered.connect(
             lambda: webbrowser.open_new('https://github.com/Rzezimioszek/eKW-pobieracz'))
         self.action_Wsparcie.triggered.connect(
             lambda: webbrowser.open_new('https://www.paypal.com/donate/?hosted_button_id=2AFDC9PRMGN3Q'))
 
 
+
+
     def test_print(self):
         print("Aqq")
+
+
+    def generate_kws(self, download: bool = False):
+
+        sad = self.lineSign.text().strip().upper()
+        bot = self.lineFloor.text().strip()
+        top = self.lineRoof.text().strip()
+
+
+        if sad not in self.sady:
+            gen_err()
+            return
+
+        try:
+            sad_value = [self.rep_dict[s] for s in sad]
+        except:
+            gen_err()
+            return
+
+
+
+
+        # print(sad_value)
+
+
+        if not bot.isdecimal() or not top.isdecimal():
+            gen_err()
+            return
+
+        bot = int(bot)
+        top = int(top)
+
+        if top > 99999999:
+            top = 99999999
+
+        if bot < 1:
+            bot = 1
+
+        if bot > top:
+            gen_err()
+            return
+
+        filetypes = (("pliki txt", "*.txt"), ("Wszystkie pliki", "*.*"))
+        path = filedialog.asksaveasfilename(title="Zapisz plik txt", filetypes=filetypes)
+        if path is not None:
+            if not path.endswith(".txt"):
+                path = path + ".txt"
+
+        if path == "":
+            gen_err()
+            return
+
+        new_kw = []
+
+        wei = [1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7]
+
+        for i in range(bot, (top + 1)):
+
+            j = str(i)
+
+            while len(j) < 8:
+                j = f"0{j}"
+
+
+            j_value = [x for x in j]
+
+            temp_kw = sad_value + j_value
+
+            ctlr_dig = 0
+            for k in range(len(wei)):
+                ctlr_dig = ctlr_dig + (wei[k] * int(temp_kw[k]))
+
+            ctlr_dig = ctlr_dig % 10
+
+            skw = sad + "/" + j + f"/{ctlr_dig}"
+
+            new_kw.append(skw)
+
+        if download:
+            for value in new_kw:
+                if "/" not in value:
+                    continue
+
+                value = value.replace("\n", "")
+                self.save_kw_to_pdf(value)
+
+        else:
+
+            with open(path, "w") as file:
+                for nk in new_kw:
+                    file.write(f"{nk}\n")
+
+            msg.showinfo("Generator KW", f"Wygenerowano listę KW\n{path}")
+
+
+
 
 
 
@@ -109,7 +227,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
 
-    def get_list(self) -> set:
+    def get_list(self):
 
         self.kw_list = self.lineList.text()
 
@@ -119,12 +237,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
         distinct = set(values)
 
-        return distinct
-        # run_by_list(distinct)
+        return_value = sorted(distinct)
+
+        return return_value
 
 
     def run_by_list(self):
-        
+
         try:
             values = self.get_list()
         except:
@@ -183,6 +302,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.save_path = self.lineSave.text()
         self.pdf_bg = self.chBg.isChecked()
+
+        zupelna = False
+
         try:
             kw = value.split('/')
 
@@ -218,15 +340,25 @@ class Window(QMainWindow, Ui_MainWindow):
 
             ###
         except:
-            if self.chError.isChecked():
-                elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-            else:
-                with open("errors.txt", 'a') as file:
-                    er = f"Error on KW: {value}"
-                    print(er)
-                    file.write(f"{er}\n")
-                return
+            zupelna = True
+
+        try:
+            if zupelna:
+                if self.chError.isChecked():
+                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
+                    elem.send_keys(Keys.RETURN)
+                else:
+                    with open("errors.txt", 'a') as file:
+                        er = f"Error on KW: {value}"
+                        print(er)
+                        file.write(f"{er}\n")
+                    return
+        except:
+            with open("errors.txt", 'a') as file:
+                er = f"Error on KW: {value}"
+                print(er)
+                file.write(f"{er}\n")
+            return
 
         try:
             i = 1  # dział I-O
@@ -307,6 +439,8 @@ class Window(QMainWindow, Ui_MainWindow):
                 print(er)
                 file.write(f"{er}\n")
 
+def gen_err():
+    print("Error generowania listy KW")
 def save_settings():
     win.setting['kwlist'] = win.lineList.text()
     win.setting['savepath'] = win.lineSave.text()
