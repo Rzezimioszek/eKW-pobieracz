@@ -7,23 +7,27 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>400</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>320</width>
-    <height>400</height>
+    <height>450</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>320</width>
-    <height>400</height>
+    <height>450</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieracz 0.3</string>
+   <string>eKW pobieracz 0.4</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>ico/eKW.jpg</normaloff>ico/eKW.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -39,12 +43,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLineEdit" name="lineList"/>
+        <widget class="QLineEdit" name="lineList">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ścieżka do listy z KW&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="placeholderText">
+          <string>ścieżka do listy z KW</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnList">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku tekstowego z listą oznaczeń ksiąg wieczystych.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
-          <string>Lista Kw</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -53,12 +67,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLineEdit" name="lineSave"/>
+        <widget class="QLineEdit" name="lineSave">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;folder zapisu ksiąg&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="placeholderText">
+          <string>folder zapisu ksiąg</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnSave">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wybór folderu do zapisu pobieranych ksiąg wieczystych&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
-          <string>Folder zapisu</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -69,23 +93,32 @@
    <widget class="QPushButton" name="btnRun">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>330</y>
-      <width>301</width>
-      <height>23</height>
+      <x>150</x>
+      <y>240</y>
+      <width>161</width>
+      <height>61</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z listy z pliku txt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
-     <string>Rozpocznij pobieranie</string>
+     <string>Pobierz</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>32</height>
+     </size>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>230</y>
+      <x>10</x>
+      <y>310</y>
       <width>301</width>
-      <height>91</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="font">
@@ -103,58 +136,52 @@
        <x>9</x>
        <y>19</y>
        <width>281</width>
-       <height>69</height>
+       <height>78</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Znak</string>
+         <widget class="QLineEdit" name="lineSign">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kod sądu np. BB1B&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="placeholderText">
+           <string>Kod sądu np. BB1B</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineSign">
+         <widget class="QLineEdit" name="lineFloor">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;numer początkowy np. 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
           <property name="placeholderText">
-           <string>BB1B</string>
+           <string>numer początkowy np. 1</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineRoof">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;numer końcowy np. 99999999&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="placeholderText">
+           <string>numer końcowy np. 99999999</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>od .. do</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineFloor">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>1</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineRoof">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="placeholderText">
-           <string>99999999</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QVBoxLayout" name="verticalLayout_5"/>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -166,8 +193,12 @@
             <bold>false</bold>
            </font>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generuj listę z potencjalnymi numerami ksiąg wieczystych z danego zakresu i zapisz do pliku txt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
-           <string>Generuj</string>
+           <string>Generuj
+listę</string>
           </property>
          </widget>
         </item>
@@ -178,6 +209,9 @@
             <weight>50</weight>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z wskazanego zakresu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Pobierz 
@@ -211,7 +245,7 @@ z zakresu</string>
        <property name="title">
         <string>Do pobrania</string>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -286,12 +320,12 @@ z zakresu</string>
        <property name="title">
         <string>Zmienne</string>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>131</width>
+          <width>134</width>
           <height>114</height>
          </rect>
         </property>
@@ -340,6 +374,38 @@ pobieraj zupełną</string>
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="btnLog">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Otwórz plik z zapisanymi logami z ostatniej operacji.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="text">
+     <string>Otwórz logi</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnErr">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>270</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Otwórz plik z odnotowanymi błędami działania programu lub wsadu do programu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="text">
+     <string>Otwórz błędy</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

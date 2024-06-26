@@ -1,8 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
 from selenium.webdriver.chrome.service import Service
+
+from datetime import datetime
+
+#
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+#
+
 import base64
 
 import time
@@ -19,16 +26,18 @@ import webbrowser
 # #### ## Kod dla UI
 
 from PyQt5.QtWidgets import (
-    QApplication, QDialog, QMainWindow, QMessageBox
+    QApplication, QDialog, QMainWindow, QMessageBox, QStyle
 )
 from PyQt5.uic import loadUi
+
+from PyQt5.QtGui import QIcon
 
 from eKW_pobieracz_ui import Ui_MainWindow
 
 # #### ##
 
-# eKW pobieracz 0.3
-eKWp_ver = "0.3"
+# eKW pobieracz 0.4
+eKWp_ver = "0.4"
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -43,6 +52,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.setting['kwlist'] = ""
         self.setting['savepath'] = "C:/"
+        self.setting['sign'] = ""
+        self.setting['startnum'] = ""
+        self.setting['endnum'] = ""
 
         if os.path.exists(self.config):
             with open(self.config, "r", encoding="utf-8") as file:
@@ -53,9 +65,16 @@ class Window(QMainWindow, Ui_MainWindow):
                 except:
                     self.setting['kwlist'] = ""
                     self.setting['savepath'] = "C:/"
+                    self.setting['startnum'] = ""
+                    self.setting['endnum'] = ""
 
         self.kw_list = self.setting['kwlist']
         self.save_path = self.setting['savepath']
+
+        self.lineSign.setText(self.setting['sign'])
+        self.lineFloor.setText(self.setting['startnum'])
+        self.lineRoof.setText(self.setting['endnum'])
+
 
         self.lineList.setText(self.kw_list)
         self.lineSave.setText(self.save_path)
@@ -63,9 +82,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pdf_bg = self.chBg.isChecked()
 
         self.sady = []
-        if os.path.exists('sady.kw'):
-            # print("Exists")
-            with open('sady.kw', 'r') as file:
+        if os.path.exists('res/sady.kw'):
+
+            with open('res/sady.kw', 'r') as file:
                 lines = file.readlines()
             self.sady = [x.replace("\n","") for x in lines]
 
@@ -75,6 +94,17 @@ class Window(QMainWindow, Ui_MainWindow):
                         "S": "28", "T": "29", "U": "30", "W": "31", "Y": "32", "Z": "33",
                         "0":"0", "1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9"}
 
+        ### icons
+        self.btnRun.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
+        self.btnGen.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.btnGenSave.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
+        self.btnList.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        self.btnSave.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.btnLog.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
+        self.btnErr.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
+
+
+
 
 
 
@@ -83,11 +113,15 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.btnRun.clicked.connect(self.run_by_list)
 
+
         self.btnList.clicked.connect(self.open_file)
         self.btnSave.clicked.connect(self.open_dir)
 
         self.btnGen.clicked.connect(self.generate_kws)
         self.btnGenSave.clicked.connect(lambda x: self.generate_kws(True))
+
+        self.btnLog.clicked.connect(lambda x: open_local_file('log.txt'))
+        self.btnErr.clicked.connect(lambda x: open_local_file('errors.txt'))
 
 
         self.action_github.triggered.connect(
@@ -95,88 +129,72 @@ class Window(QMainWindow, Ui_MainWindow):
         self.action_Wsparcie.triggered.connect(
             lambda: webbrowser.open_new('https://www.paypal.com/donate/?hosted_button_id=2AFDC9PRMGN3Q'))
 
-
-
-
-    def test_print(self):
-        print("Aqq")
-
-
     def generate_kws(self, download: bool = False):
 
         sad = self.lineSign.text().strip().upper()
         bot = self.lineFloor.text().strip()
         top = self.lineRoof.text().strip()
 
+        clear_log()
 
         if sad not in self.sady:
-            gen_err()
+            err = f"Brak oznaczenia sądu [{sad}], sprawdz plik res/sady.kw"
+            gen_err(err, True)
             return
 
         try:
             sad_value = [self.rep_dict[s] for s in sad]
         except:
-            gen_err()
+            err = f"Oznaczenie sądu {sad} nieprawidłowe"
+            gen_err(err, True)
             return
 
-
-
-
-        # print(sad_value)
-
-
         if not bot.isdecimal() or not top.isdecimal():
-            gen_err()
+            err = f"Nieporawny przedział dla wartości dolnej lub górnej"
+            gen_err(err, True)
             return
 
         bot = int(bot)
         top = int(top)
 
         if top > 99999999:
+            err = f"Wartość górna {top} powyżej dozwolonego przedziału zmiana na 99999999"
+            gen_err(err)
             top = 99999999
 
         if bot < 1:
+            err = f"Wartość dolna {bot} poniżejj dozwolonego przedziału zmiana na 1"
+            gen_err(err)
             bot = 1
 
         if bot > top:
-            gen_err()
+            err = f"Wartość dolna {bot} większa od górnej {top}"
+            gen_err(err)
             return
 
-        filetypes = (("pliki txt", "*.txt"), ("Wszystkie pliki", "*.*"))
-        path = filedialog.asksaveasfilename(title="Zapisz plik txt", filetypes=filetypes)
-        if path is not None:
-            if not path.endswith(".txt"):
-                path = path + ".txt"
+        if not download:
+
+            gen_err(f"Generowanie listy Kw dla sądu {sad} i przedziału {bot} do {top}")
+
+            filetypes = (("pliki txt", "*.txt"), ("Wszystkie pliki", "*.*"))
+            path = filedialog.asksaveasfilename(title="Zapisz plik txt", filetypes=filetypes)
+            if path is not None:
+                if not path.endswith(".txt"):
+                    path = path + ".txt"
+        else:
+            path = "c:/"
+            gen_err(f"Pobieranie KW dla: {sad}/{bot}-{top}/n")
 
         if path == "":
-            gen_err()
+            err = f"Niepodano scięzki zapisu"
+            gen_err(err, True)
             return
 
         new_kw = []
 
-        wei = [1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7]
-
         for i in range(bot, (top + 1)):
 
-            j = str(i)
-
-            while len(j) < 8:
-                j = f"0{j}"
-
-
-            j_value = [x for x in j]
-
-            temp_kw = sad_value + j_value
-
-            ctlr_dig = 0
-            for k in range(len(wei)):
-                ctlr_dig = ctlr_dig + (wei[k] * int(temp_kw[k]))
-
-            ctlr_dig = ctlr_dig % 10
-
-            skw = sad + "/" + j + f"/{ctlr_dig}"
-
-            new_kw.append(skw)
+            new_kw.append(self.correct_kw_number(sad, str(i)))
 
         if download:
             for value in new_kw:
@@ -185,6 +203,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 value = value.replace("\n", "")
                 self.save_kw_to_pdf(value)
+            gen_err("Pobrano księgi z wygenerowanej listy KW", log=True)
+            msg.showinfo("Generator KW", f"Pobrano księgi z wygenerowanej listy KW")
 
         else:
 
@@ -194,12 +214,27 @@ class Window(QMainWindow, Ui_MainWindow):
 
             msg.showinfo("Generator KW", f"Wygenerowano listę KW\n{path}")
 
+    def correct_kw_number(self, sad, number):
 
+        sad_value = [self.rep_dict[s] for s in sad]
 
+        wei = [1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7]
 
+        while len(number) < 8:
+            number = f"0{number}"
 
+        j_value = [x for x in number]
 
+        temp_kw = sad_value + j_value
+        ctlr_dig = 0
+        for k in range(len(wei)):
+            ctlr_dig = ctlr_dig + (wei[k] * int(temp_kw[k]))
 
+        ctlr_dig = ctlr_dig % 10
+
+        skw = sad + "/" + number + f"/{ctlr_dig}"
+
+        return skw
 
     def open_file(self):
 
@@ -251,38 +286,20 @@ class Window(QMainWindow, Ui_MainWindow):
             return
 
         tasks = []
+        clear_log()
 
-        bigtic = time.perf_counter()
         for value in values:
 
             if "/" not in value:
                 continue
 
-            tic = time.perf_counter()
-
             value = value.replace("\n", "")
             self.save_kw_to_pdf(value)
 
             # tasks.append(save_kw_to_pdf(value))  # <----------
-            toc = time.perf_counter()
-
-            print(f"Czas: {toc - tic:0.4f} s\n")
-
-        bigtoc = time.perf_counter()
-
-        passed_time = bigtoc - bigtic
-
-        op_time = f"{passed_time:0.2f}s"
-
-        if passed_time > 3600:
-            passed_time = passed_time/3600
-            op_time = f"{passed_time:0.2f}h"
-        if passed_time > 60:
-            passed_time = passed_time / 60
-            op_time = f"{passed_time:0.2f}min"
 
 
-        msg.showinfo("Zakończono pobieranie", f"Księgi wieczyste zostały pobrane\nOpracja zajeła: {op_time}")
+        gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
 
         """# Run the tasks
             done = False
@@ -305,19 +322,28 @@ class Window(QMainWindow, Ui_MainWindow):
 
         zupelna = False
 
+        gen_err(f"Wprowadzona wartość: {value}")
+
         try:
             kw = value.split('/')
 
+            if 2 <= len(kw) < 3:
+                value = self.correct_kw_number(kw[0], kw[1])
+                kw = value.split('/')
+                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
+
             options = webdriver.ChromeOptions()
             service = Service()
-
             browser = webdriver.Chrome(service=service, options=options)
 
             browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-            # assert 'OP1U'
 
-            # time.sleep(5)
             time.sleep(3)
+
+            # elem = WebDriverWait(webdriver, 10).until(
+            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
+
+            # time.sleep(3)
 
             ### insert KW number
 
@@ -341,23 +367,22 @@ class Window(QMainWindow, Ui_MainWindow):
             ###
         except:
             zupelna = True
+            err = f"Treść zwykła wydruku niedostępna dla: {value}"
+            gen_err(err)
 
         try:
             if zupelna:
                 if self.chError.isChecked():
                     elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
                     elem.send_keys(Keys.RETURN)
+                    gen_err("Pobieranie treści zupełnej")
                 else:
-                    with open("errors.txt", 'a') as file:
-                        er = f"Error on KW: {value}"
-                        print(er)
-                        file.write(f"{er}\n")
+                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
+                    gen_err(err, write=True)
                     return
         except:
-            with open("errors.txt", 'a') as file:
-                er = f"Error on KW: {value}"
-                print(er)
-                file.write(f"{er}\n")
+            err = f"Błąd pobierania księgi: {value}"
+            gen_err(err, write=True)
             return
 
         try:
@@ -431,19 +456,46 @@ class Window(QMainWindow, Ui_MainWindow):
 
             # yield  # <-------------------
 
-            print(f"{value} --saved successfull")
+            gen_err(f"Pobrano księgę: {value}")
         except:
 
-            with open("errors.txt", 'a') as file:
-                er = f"Error on KW: {value}"
-                print(er)
-                file.write(f"{er}\n")
+            err = f"Błąd pobierania wybranych działów księgi: {value}"
+            gen_err(err, write=True)
 
-def gen_err():
-    print("Error generowania listy KW")
+
+def clear_log():
+
+    with open('log.txt', 'w') as file:
+        file.write(f"")
+
+def open_local_file(file):
+    try:
+        os.startfile(file)
+    except:
+        msg.showerror("Brak pliku", "Plik nieistnieje lub brak uprawnień do dostępu.")
+
+def gen_err(err: str = "Error", rise: bool = False, write = False, log = True):
+
+    ct = datetime.now().strftime('%d.%m.%y %H:%M:%S')
+    print(f"[{ct}]\t{err}")
+
+    if write:
+        with open("errors.txt", 'a') as file:
+            file.write(f"[{ct}]{err}\n")
+
+    if log:
+        with open('log.txt', 'a') as file:
+            file.write(f"[{ct}]\t{err}\n")
+
+    if rise:
+        msg.showerror("Error", err)
 def save_settings():
     win.setting['kwlist'] = win.lineList.text()
     win.setting['savepath'] = win.lineSave.text()
+
+    win.setting['sign'] = win.lineSign.text()
+    win.setting['startnum'] = win.lineFloor.text()
+    win.setting['endnum'] = win.lineRoof.text()
 
     with open(win.config, "w", encoding="utf-8") as file:
         json.dump(win.setting, file, ensure_ascii=False)
@@ -457,6 +509,7 @@ if __name__ == "__main__":
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(save_settings)
+    # app.setWindowIcon(QIcon(":/main/eKw.jpg"))
     win = Window()
     win.show()
     sys.exit(app.exec())
