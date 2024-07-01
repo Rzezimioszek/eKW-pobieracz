@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieracz 0.4</string>
+   <string>eKW pobieracz 0.5</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -93,17 +93,17 @@
    <widget class="QPushButton" name="btnRun">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>240</y>
-      <width>161</width>
-      <height>61</height>
+      <x>170</x>
+      <y>230</y>
+      <width>141</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z listy z pliku txt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>Pobierz</string>
+     <string>Pobierz pojedynczo</string>
     </property>
     <property name="iconSize">
      <size>
@@ -353,16 +353,6 @@ pobieraj zupełną</string>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="chTurbo">
-           <property name="text">
-            <string>Tryb TURBO (Uważaj!)</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QCheckBox" name="chBg">
            <property name="text">
             <string>Zachować tło strony</string>
@@ -379,8 +369,8 @@ pobieraj zupełną</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>240</y>
-      <width>141</width>
+      <y>230</y>
+      <width>81</width>
       <height>31</height>
      </rect>
     </property>
@@ -388,15 +378,15 @@ pobieraj zupełną</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Otwórz plik z zapisanymi logami z ostatniej operacji.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>Otwórz logi</string>
+     <string>Logi</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnErr">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>270</y>
-      <width>141</width>
+      <x>90</x>
+      <y>230</y>
+      <width>81</width>
       <height>31</height>
      </rect>
     </property>
@@ -404,8 +394,63 @@ pobieraj zupełną</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Otwórz plik z odnotowanymi błędami działania programu lub wsadu do programu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>Otwórz błędy</string>
+     <string>Błędy</string>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>301</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Pobieranie wielowątkowe</string>
+    </property>
+    <widget class="QPushButton" name="btnTurbo">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>10</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Turbo pobieranie</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spN">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>20</y>
+       <width>41</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>2</number>
+     </property>
+     <property name="value">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>20</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Liczba operacji:</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

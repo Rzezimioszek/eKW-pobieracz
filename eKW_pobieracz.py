@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 
 from datetime import datetime
-
+import asyncio
 #
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -36,8 +36,8 @@ from eKW_pobieracz_ui import Ui_MainWindow
 
 # #### ##
 
-# eKW pobieracz 0.4
-eKWp_ver = "0.4"
+# eKW pobieracz 0.5
+eKWp_ver = "0.5"
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -103,6 +103,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.btnLog.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
         self.btnErr.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
 
+        gen_err(err="Uruchomiono program", log=True)
+
 
 
 
@@ -112,6 +114,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def connectSignalsSlots(self):
 
         self.btnRun.clicked.connect(self.run_by_list)
+        self.btnTurbo.clicked.connect(lambda x: asyncio.run(self.run_by_list_turbo()))
 
 
         self.btnList.clicked.connect(self.open_file)
@@ -259,9 +262,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.save_path = path
             self.lineSave.setText(path)
 
-
-
-
     def get_list(self):
 
         self.kw_list = self.lineList.text()
@@ -276,6 +276,50 @@ class Window(QMainWindow, Ui_MainWindow):
 
         return return_value
 
+    async def run_by_list_turbo(self):
+
+        try:
+            values = self.get_list()
+        except:
+            msg.showerror("Zła lista", "Plik wejściowy z listą kw niepoprawny.")
+            return
+
+        clear_log()
+
+        task = []
+        i = 0
+        j = 0
+        k = 0
+
+        # n = 5
+
+        n = self.spN.value()
+
+        for value in values:
+
+            if "/" not in value:
+                continue
+
+            value = value.replace("\n", "")
+
+            task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(value)))
+            j += 1
+            i += 1
+
+
+            if j == n or i == len(values):
+                k += 1
+                gen_err(f"Pętla: {k}")
+                await asyncio.gather(*task)
+                task.clear()
+                # await asyncio.sleep(9 * j)
+                j = 0
+
+
+        gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
+        msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
+
+
 
     def run_by_list(self):
 
@@ -285,9 +329,7 @@ class Window(QMainWindow, Ui_MainWindow):
             msg.showerror("Zła lista", "Plik wejściowy z listą kw niepoprawny.")
             return
 
-        tasks = []
         clear_log()
-
         for value in values:
 
             if "/" not in value:
@@ -296,26 +338,10 @@ class Window(QMainWindow, Ui_MainWindow):
             value = value.replace("\n", "")
             self.save_kw_to_pdf(value)
 
-            # tasks.append(save_kw_to_pdf(value))  # <----------
-
-
         gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
+        msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
 
-        """# Run the tasks
-            done = False
-            while not done:
-                for t in tasks:
-                    try:
-                        next(t)
-                    except StopIteration:
-                        tasks.remove(t)
-                    if len(tasks) == 0:
-                        done = True"""
-
-
-
-
-    def save_kw_to_pdf(self, value: str):
+    async def save_kw_to_pdf_turbo(self, value: str): #
 
         self.save_path = self.lineSave.text()
         self.pdf_bg = self.chBg.isChecked()
@@ -338,12 +364,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
 
-            time.sleep(3)
-
-            # elem = WebDriverWait(webdriver, 10).until(
-            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
-
-            # time.sleep(3)
+            await asyncio.sleep(3)
 
             ### insert KW number
 
@@ -359,7 +380,7 @@ class Window(QMainWindow, Ui_MainWindow):
             elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
             elem.send_keys(Keys.RETURN)
 
-            # time.sleep(1)
+            await asyncio.sleep(1)
 
             elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
             elem.send_keys(Keys.RETURN)
@@ -390,7 +411,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             if self.ch1o.isChecked():
 
-                time.sleep(2)
+                await asyncio.sleep(2)
 
                 elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
                 elem.send_keys(Keys.RETURN)
@@ -402,7 +423,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             if self.ch1s.isChecked():
 
-                time.sleep(2)
+                await asyncio.sleep(2)
 
                 elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
                 elem.send_keys(Keys.RETURN)
@@ -416,7 +437,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             if self.ch2.isChecked():
 
-                time.sleep(2)
+                await asyncio.sleep(2)
 
                 elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
                 elem.send_keys(Keys.RETURN)
@@ -430,7 +451,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             if self.ch3.isChecked():
 
-                time.sleep(2)
+                await asyncio.sleep(2)
 
                 elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
                 elem.send_keys(Keys.RETURN)
@@ -444,7 +465,152 @@ class Window(QMainWindow, Ui_MainWindow):
 
             if self.ch4.isChecked():
 
-                time.sleep(2)
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
+                pdf_data = base64.b64decode(pdf["data"])
+                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+                    f.write(pdf_data)
+
+            gen_err(f"Pobrano księgę: {value}")
+        except:
+
+            err = f"Błąd pobierania wybranych działów księgi: {value}"
+            gen_err(err, write=True)
+
+    def save_kw_to_pdf(self, value: str): #
+
+        self.save_path = self.lineSave.text()
+        self.pdf_bg = self.chBg.isChecked()
+
+        zupelna = False
+
+        gen_err(f"Wprowadzona wartość: {value}")
+
+        try:
+            kw = value.split('/')
+
+            if 2 <= len(kw) < 3:
+                value = self.correct_kw_number(kw[0], kw[1])
+                kw = value.split('/')
+                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
+
+            options = webdriver.ChromeOptions()
+            service = Service()
+            browser = webdriver.Chrome(service=service, options=options)
+
+            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
+
+            time.sleep(3) #
+
+            # elem = WebDriverWait(webdriver, 10).until(
+            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
+
+            # time.sleep(3)
+
+            ### insert KW number
+
+            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
+            elem.send_keys(kw[0])
+
+            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
+            elem.send_keys(kw[1])
+
+            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
+            elem.send_keys(kw[2])
+
+            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
+            elem.send_keys(Keys.RETURN)
+
+            time.sleep(1)
+
+            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
+            elem.send_keys(Keys.RETURN)
+
+            ###
+        except:
+            zupelna = True
+            err = f"Treść zwykła wydruku niedostępna dla: {value}"
+            gen_err(err)
+
+        try:
+            if zupelna:
+                if self.chError.isChecked():
+                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
+                    elem.send_keys(Keys.RETURN)
+                    gen_err("Pobieranie treści zupełnej")
+                else:
+                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
+                    gen_err(err, write=True)
+                    return
+        except:
+            err = f"Błąd pobierania księgi: {value}"
+            gen_err(err, write=True)
+            return
+
+        try:
+            i = 1  # dział I-O
+
+            if self.ch1o.isChecked():
+
+                time.sleep(2) #
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
+                pdf_data = base64.b64decode(pdf["data"])
+                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf", "wb") as f:
+                    f.write(pdf_data)
+
+            if self.ch1s.isChecked():
+
+                time.sleep(2) #
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
+                pdf_data = base64.b64decode(pdf["data"])
+                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf", "wb") as f:
+                    f.write(pdf_data)
+
+            i = 2  # dział II
+
+            if self.ch2.isChecked():
+
+                time.sleep(2) #
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
+                pdf_data = base64.b64decode(pdf["data"])
+                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+                    f.write(pdf_data)
+
+            i = 3  # dział III
+
+            if self.ch3.isChecked():
+
+                time.sleep(2) #
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
+                pdf_data = base64.b64decode(pdf["data"])
+                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+                    f.write(pdf_data)
+
+            i = 4  # dział IV
+
+            if self.ch4.isChecked():
+
+                time.sleep(2) #
 
                 elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
                 elem.send_keys(Keys.RETURN)
@@ -500,7 +666,7 @@ def save_settings():
     with open(win.config, "w", encoding="utf-8") as file:
         json.dump(win.setting, file, ensure_ascii=False)
 
-    sys.exit(app.exec())
+    asyncio.run(sys.exit(app.exec()))
 
 
 if __name__ == "__main__":
@@ -512,5 +678,5 @@ if __name__ == "__main__":
     # app.setWindowIcon(QIcon(":/main/eKw.jpg"))
     win = Window()
     win.show()
-    sys.exit(app.exec())
+    asyncio.run(sys.exit(app.exec()))
 
