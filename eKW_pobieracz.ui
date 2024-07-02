@@ -7,23 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>450</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>320</width>
-    <height>450</height>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>320</width>
-    <height>450</height>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieracz 0.5</string>
+   <string>eKW pobieraczek 0.6</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -116,9 +116,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>310</y>
+      <y>330</y>
       <width>301</width>
-      <height>101</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="font">
@@ -136,7 +136,7 @@
        <x>9</x>
        <y>19</y>
        <width>281</width>
-       <height>78</height>
+       <height>101</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -197,8 +197,7 @@
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generuj listę z potencjalnymi numerami ksiąg wieczystych z danego zakresu i zapisz do pliku txt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Generuj
-listę</string>
+           <string>Generuj listę</string>
           </property>
          </widget>
         </item>
@@ -214,8 +213,21 @@ listę</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z wskazanego zakresu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Pobierz 
-z zakresu</string>
+           <string>Pobierz z zakresu</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnGenSaveTurbo">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Turbo
+Pobierz z zakresu</string>
           </property>
          </widget>
         </item>
@@ -337,7 +349,10 @@ z zakresu</string>
 pdf</string>
            </property>
            <property name="checkable">
-            <bool>false</bool>
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -401,7 +416,7 @@ pobieraj zupełną</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
+      <y>280</y>
       <width>301</width>
       <height>51</height>
      </rect>
@@ -419,7 +434,8 @@ pobieraj zupełną</string>
       </rect>
      </property>
      <property name="text">
-      <string>Turbo pobieranie</string>
+      <string>Turbo pobieranie
+! U W A Ż A J !</string>
      </property>
     </widget>
     <widget class="QSpinBox" name="spN">
@@ -451,6 +467,19 @@ pobieraj zupełną</string>
       <string>Liczba operacji:</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="btnIns">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>161</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Instrukcja obsługi</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

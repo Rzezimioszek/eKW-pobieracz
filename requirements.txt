@@ -9,3 +9,4 @@ json
 tkinter
 webbrowser
 PyQt5
+pypdf

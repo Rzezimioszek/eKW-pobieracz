@@ -22,6 +22,8 @@ from tkinter import messagebox as msg
 
 import webbrowser
 
+import pypdf as pypdf
+
 
 # #### ## Kod dla UI
 
@@ -36,8 +38,8 @@ from eKW_pobieracz_ui import Ui_MainWindow
 
 # #### ##
 
-# eKW pobieracz 0.5
-eKWp_ver = "0.5"
+# eKW pobieracz 0.6
+eKWp_ver = "0.6"
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -122,9 +124,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.btnGen.clicked.connect(self.generate_kws)
         self.btnGenSave.clicked.connect(lambda x: self.generate_kws(True))
+        self.btnGenSaveTurbo.clicked.connect(lambda x: self.generate_kws(True, True))
 
         self.btnLog.clicked.connect(lambda x: open_local_file('log.txt'))
         self.btnErr.clicked.connect(lambda x: open_local_file('errors.txt'))
+        self.btnIns.clicked.connect(lambda x: open_local_file('eKW pobieraczek - instrukcja.pdf'))
 
 
         self.action_github.triggered.connect(
@@ -132,7 +136,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.action_Wsparcie.triggered.connect(
             lambda: webbrowser.open_new('https://www.paypal.com/donate/?hosted_button_id=2AFDC9PRMGN3Q'))
 
-    def generate_kws(self, download: bool = False):
+    def generate_kws(self, download: bool = False, turbo: bool = False):
 
         sad = self.lineSign.text().strip().upper()
         bot = self.lineFloor.text().strip()
@@ -200,12 +204,21 @@ class Window(QMainWindow, Ui_MainWindow):
             new_kw.append(self.correct_kw_number(sad, str(i)))
 
         if download:
-            for value in new_kw:
-                if "/" not in value:
-                    continue
 
-                value = value.replace("\n", "")
-                self.save_kw_to_pdf(value)
+
+            if turbo:
+
+                asyncio.run(self.run_by_list_turbo(new_kw))
+
+            else:
+
+                for value in new_kw:
+                    if "/" not in value:
+                        continue
+
+                    value = value.replace("\n", "")
+                    self.save_kw_to_pdf(value)
+
             gen_err("Pobrano księgi z wygenerowanej listy KW", log=True)
             msg.showinfo("Generator KW", f"Pobrano księgi z wygenerowanej listy KW")
 
@@ -276,10 +289,12 @@ class Window(QMainWindow, Ui_MainWindow):
 
         return return_value
 
-    async def run_by_list_turbo(self):
+
+    async def run_by_list_turbo(self, values = []):
 
         try:
-            values = self.get_list()
+            if len(values) < 1:
+                values = self.get_list()
         except:
             msg.showerror("Zła lista", "Plik wejściowy z listą kw niepoprawny.")
             return
@@ -345,6 +360,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.save_path = self.lineSave.text()
         self.pdf_bg = self.chBg.isChecked()
+
+        to_merge = []
+        merge = self.chMerge.isChecked()
 
         zupelna = False
 
@@ -418,8 +436,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             if self.ch1s.isChecked():
 
@@ -430,8 +453,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 2  # dział II
 
@@ -444,8 +472,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 3  # dział III
 
@@ -458,8 +491,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 4  # dział IV
 
@@ -472,13 +510,45 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             gen_err(f"Pobrano księgę: {value}")
         except:
 
             err = f"Błąd pobierania wybranych działów księgi: {value}"
+            gen_err(err, write=True)
+
+
+        try:
+            if merge and len(to_merge) > 0:
+
+                await asyncio.sleep(2)
+
+                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
+
+                out_pdf = pypdf.PdfWriter()
+                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
+
+                for tm in to_merge:
+                    src_pdf = pypdf.PdfReader(tm)
+                    out_pdf.append_pages_from_reader(src_pdf)
+
+                with open(dst_path, "wb") as file:
+                    out_pdf.write(file)
+
+                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
+
+                for tm in to_merge:
+                    os.remove(tm)
+
+        except:
+            err = f"Błąd łączenia działów księgi: {value}"
             gen_err(err, write=True)
 
     def save_kw_to_pdf(self, value: str): #
@@ -487,6 +557,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pdf_bg = self.chBg.isChecked()
 
         zupelna = False
+
+        to_merge = []
+        merge = self.chMerge.isChecked()
 
         gen_err(f"Wprowadzona wartość: {value}")
 
@@ -563,8 +636,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             if self.ch1s.isChecked():
 
@@ -575,8 +653,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 2  # dział II
 
@@ -589,8 +672,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 3  # dział III
 
@@ -603,8 +691,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
+
+                if merge:
+                    to_merge.append(cur_path)
 
             i = 4  # dział IV
 
@@ -617,16 +710,44 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
                 pdf_data = base64.b64decode(pdf["data"])
-                with open(f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf", "wb") as f:
+
+                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
+                with open(cur_path, "wb") as f:
                     f.write(pdf_data)
 
-            # yield  # <-------------------
+                if merge:
+                    to_merge.append(cur_path)
 
             gen_err(f"Pobrano księgę: {value}")
         except:
 
             err = f"Błąd pobierania wybranych działów księgi: {value}"
             gen_err(err, write=True)
+
+        try:
+            if merge and len(to_merge) > 0:
+
+                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
+
+                out_pdf = pypdf.PdfWriter()
+                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
+
+                for tm in to_merge:
+                    src_pdf = pypdf.PdfReader(tm)
+                    out_pdf.append_pages_from_reader(src_pdf)
+
+                with open(dst_path, "wb") as file:
+                    out_pdf.write(file)
+
+                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
+
+                for tm in to_merge:
+                    os.remove(tm)
+
+        except:
+            err = f"Błąd łączenia działów księgi: {value}"
+            gen_err(err, write=True)
+
 
 
 def clear_log():
@@ -667,6 +788,7 @@ def save_settings():
         json.dump(win.setting, file, ensure_ascii=False)
 
     asyncio.run(sys.exit(app.exec()))
+
 
 
 if __name__ == "__main__":
