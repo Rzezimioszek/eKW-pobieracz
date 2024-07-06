@@ -1,6 +1,6 @@
 # eKW pobieraczek (eKW-pobieracz)
 
-Wątek na wykopie ![eKWpobieraczek](https://wykop.pl/tag/ekwpobieraczek)
+Wątek na wykopie https://wykop.pl/tag/ekwpobieraczek
 Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.gov.pl
 
 Plik EXE po prawej stronie w Released
