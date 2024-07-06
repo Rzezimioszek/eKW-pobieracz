@@ -10,3 +10,6 @@ tkinter
 webbrowser
 PyQt5
 pypdf
+pandas
+logging
+python-vlc

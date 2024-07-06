@@ -7,23 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>500</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>320</width>
-    <height>500</height>
+    <height>620</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>320</width>
-    <height>500</height>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieraczek 0.6</string>
+   <string>eKW pobieraczek 0.7</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -34,9 +34,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>60</y>
       <width>301</width>
-      <height>71</height>
+      <height>81</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -94,7 +94,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>230</y>
+      <y>380</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -116,14 +116,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>330</y>
+      <y>470</y>
       <width>301</width>
-      <height>121</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
@@ -136,7 +135,7 @@
        <x>9</x>
        <y>19</y>
        <width>281</width>
-       <height>101</height>
+       <height>104</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -189,7 +188,6 @@
          <widget class="QPushButton" name="btnGen">
           <property name="font">
            <font>
-            <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
@@ -205,7 +203,6 @@
          <widget class="QPushButton" name="btnGenSave">
           <property name="font">
            <font>
-            <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
@@ -221,7 +218,6 @@
          <widget class="QPushButton" name="btnGenSaveTurbo">
           <property name="font">
            <font>
-            <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
@@ -240,7 +236,7 @@ Pobierz z zakresu</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>140</y>
       <width>301</width>
       <height>141</height>
      </rect>
@@ -250,7 +246,6 @@ Pobierz z zakresu</string>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="font">
         <font>
-         <weight>50</weight>
          <bold>false</bold>
         </font>
        </property>
@@ -322,61 +317,62 @@ Pobierz z zakresu</string>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="title">
-        <string>Zmienne</string>
-       </property>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>20</y>
-          <width>134</width>
-          <height>114</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QCheckBox" name="chMerge">
-           <property name="text">
-            <string>Złącz działy w jeden
-pdf</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="chError">
-           <property name="text">
-            <string>Gdy brak aktualnej 
-pobieraj zupełną</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="chBg">
-           <property name="text">
-            <string>Zachować tło strony</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Format plików</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_4">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>131</width>
+            <height>111</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QCheckBox" name="chPDF">
+             <property name="text">
+              <string>PDF</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chHTML">
+             <property name="text">
+              <string>HTML</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chTXT">
+             <property name="text">
+              <string>TXT</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chJSON">
+             <property name="text">
+              <string>raport JSON</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chCSV">
+             <property name="text">
+              <string>CSV</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -384,7 +380,7 @@ pobieraj zupełną</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>230</y>
+      <y>380</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -400,7 +396,7 @@ pobieraj zupełną</string>
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>230</y>
+      <y>380</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -416,9 +412,9 @@ pobieraj zupełną</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
+      <y>410</y>
       <width>301</width>
-      <height>51</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="title">
@@ -430,12 +426,12 @@ pobieraj zupełną</string>
        <x>160</x>
        <y>10</y>
        <width>141</width>
-       <height>31</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Turbo pobieranie
-! U W A Ż A J !</string>
+! O S T R O Ż N I E !</string>
      </property>
     </widget>
     <widget class="QSpinBox" name="spN">
@@ -468,18 +464,151 @@ pobieraj zupełną</string>
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="btnIns">
+   <widget class="QLabel" name="lblBanner">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
-      <width>161</width>
-      <height>23</height>
+      <y>0</y>
+      <width>301</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
-     <string>Instrukcja obsługi</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/baner/res/baner_310x60.jpg&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>630</y>
+      <width>301</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QPushButton" name="btnPause">
+       <property name="text">
+        <string>Pauza/Wznowienie</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnStop">
+       <property name="text">
+        <string>Stop</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>600</y>
+      <width>301</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>301</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>Zmienne</string>
+    </property>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>148</width>
+       <height>84</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="chMerge">
+        <property name="text">
+         <string>Złącz działy w jeden
+pdf</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chError">
+        <property name="text">
+         <string>Gdy brak aktualnej 
+pobieraj zupełną</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>148</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <widget class="QCheckBox" name="chBg">
+        <property name="text">
+         <string>Zachować tło strony</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chImg">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Włącz lub wyłącz ładowanie grafik na stronie (może zmniejszyć zużycie ramu)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>ładowanie grafik
+strony</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -502,8 +631,16 @@ pobieraj zupełną</string>
     </property>
     <addaction name="action_Wsparcie"/>
     <addaction name="action_github"/>
+    <addaction name="action_Instrukcja"/>
+   </widget>
+   <widget class="QMenu" name="menu_Muzyka">
+    <property name="title">
+     <string>&amp;Muzyka</string>
+    </property>
+    <addaction name="action_muzyka"/>
    </widget>
    <addaction name="menu_Plik"/>
+   <addaction name="menu_Muzyka"/>
    <addaction name="menu_O_programie"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -517,7 +654,19 @@ pobieraj zupełną</string>
     <string>&amp;Github</string>
    </property>
   </action>
+  <action name="action_Instrukcja">
+   <property name="text">
+    <string>&amp;Instrukcja</string>
+   </property>
+  </action>
+  <action name="action_muzyka">
+   <property name="text">
+    <string>&amp;włącz/wyłącz</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

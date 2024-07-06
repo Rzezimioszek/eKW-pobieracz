@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="baner">
+    <file>res/baner_310x60.jpg</file>
+    <file>res/baner_lite.jpg</file>
+  </qresource>
+</RCC>
