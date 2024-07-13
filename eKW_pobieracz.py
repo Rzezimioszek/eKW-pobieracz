@@ -2,9 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 from datetime import datetime
 import asyncio
+
+from pathlib import Path
 
 import pandas as pd
 #
@@ -26,7 +29,7 @@ import webbrowser
 
 import pypdf as pypdf
 import logging
-from vlc import MediaPlayer
+# from vlc import MediaPlayer
 
 
 # #### ## Kod dla UI
@@ -44,12 +47,12 @@ from eKW_pobieracz_ui import Ui_MainWindow
 
 # #### ##
 
-# eKW pobieracz 0.7 beta
-eKWp_ver = "0.7"
+# eKW pobieracz 0.8
+eKWp_ver = "0.8"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-class MusicLooper(QThread):
+"""class MusicLooper(QThread):
     def __init__(self):
         super().__init__()
         self.play = True
@@ -73,7 +76,7 @@ class MusicLooper(QThread):
         self.play = False
         self.musicplayer.stop()
         self.terminate()
-        self.quit()
+        self.quit()"""
 
 
 
@@ -582,6 +585,13 @@ class GenerateTurbo(QThread):
                 value = win.correct_kw_number(kw[0], kw[1])
                 kw = value.split('/')
                 gen_err(f"Poprawiono cyfrę kontrolną: {value}")
+
+            if win.chSkip.isChecked():
+
+                ext_list = [Path(p).stem for p in os.listdir(save_path)]
+                if value.replace('/', '.') in ext_list:
+                    logging.info(f"Skiped {value}")
+                    return
 
             browser = get_driver(win.chImg.isChecked())
 
@@ -1277,6 +1287,14 @@ class ListTurbo(QThread):
                 kw = value.split('/')
                 gen_err(f"Poprawiono cyfrę kontrolną: {value}")
 
+
+            if win.chSkip.isChecked():
+
+                ext_list = [Path(p).stem for p in os.listdir(save_path)]
+                if value.replace('/', '.') in ext_list:
+                    logging.info(f"Skiped {value}")
+                    return
+
             browser = get_driver(win.chImg.isChecked())
 
             browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
@@ -1510,14 +1528,18 @@ class Window(QMainWindow, Ui_MainWindow):
                                     'save_csv': True
                                     }
 
-        if 'Music' not in self.setting.keys():
-            self.setting['Music'] = True
+        self.setting['Music'] = False # self.exist_setting('Music', True)
 
         self.save_pdf = self.exist_setting('Save')['save_pdf']
         self.save_html = self.exist_setting('Save')['save_html']
         self.save_txt = self.exist_setting('Save')['save_txt']
         self.save_raport = self.exist_setting('Save')['save_raport']
         self.save_csv = self.exist_setting('Save')['save_csv']
+
+        self.chSkip.setChecked(self.exist_setting('Skip', True))
+        self.chProxy.setChecked(self.exist_setting('Proxy', True))
+        self.lineProxy.setText(self.exist_setting('ProxyIP'))
+
 
         self.load_format_checks()
 
@@ -1556,10 +1578,10 @@ class Window(QMainWindow, Ui_MainWindow):
 
         gen_err(err="Uruchomiono program", log=True)
 
-        self.music_looper = MusicLooper()
+        """ self.music_looper = MusicLooper()
 
         if self.setting['Music']:
-            self.music_looper.start()
+            self.music_looper.start()"""
 
         self.runner = ListStandard([])
     def connectSignalsSlots(self):
@@ -1595,6 +1617,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.chCSV.clicked.connect(lambda: self.update_values())
 
 
+
         self.action_github.triggered.connect(
             lambda: webbrowser.open_new('https://github.com/Rzezimioszek/eKW-pobieracz'))
         self.action_Wsparcie.triggered.connect(
@@ -1603,15 +1626,19 @@ class Window(QMainWindow, Ui_MainWindow):
         self.action_Instrukcja.triggered.connect(
             lambda x: open_local_file('eKW pobieraczek - instrukcja.pdf'))
 
-        self.action_muzyka.triggered.connect(lambda x: self.music_switch())
+        self.btn_Github.clicked.connect(lambda: webbrowser.open_new('https://github.com/Rzezimioszek/eKW-pobieracz'))
+        self.btn_Coffe.clicked.connect(lambda: webbrowser.open_new('https://www.paypal.com/donate/?hosted_button_id=2AFDC9PRMGN3Q'))
+        self.btn_Instrukcja.clicked.connect(lambda x: open_local_file('eKW pobieraczek - instrukcja.pdf'))
+
+        # self.action_muzyka.triggered.connect(lambda x: self.music_switch())
 
     def music_switch(self):
-        if self.setting['Music']:
+        """if self.setting['Music']:
             self.music_looper.change()
         else:
             self.music_looper.start()
 
-        self.setting['Music'] = not self.setting['Music']
+        self.setting['Music'] = not self.setting['Music']"""
     def download_standard(self):
         self.runner = ListStandard(self.get_list())
         self.runner.progress.connect(self.update_progress)
@@ -2313,14 +2340,21 @@ class Window(QMainWindow, Ui_MainWindow):
             err = f"Błąd łączenia działów księgi: {value}"
             gen_err(err, write=True)
 
-    def exist_setting(self, key):
+    def exist_setting(self, key, bool=False):
         if key in self.setting.keys():
             return self.setting[key]
         else:
-            return ""
+            if bool:
+                return False
+            else:
+                return ""
 
 
 def get_driver(img=True):
+
+
+
+
 
     try:
         options = webdriver.ChromeOptions()
@@ -2330,8 +2364,15 @@ def get_driver(img=True):
             options.add_experimental_option("prefs", prefs)
 
 
+        if win.chProxy.isChecked():
+            proxy = win.lineProxy.text()
+            options.add_argument(f"--proxy-server={proxy}")
+
+        # options.add_argument("--headless=new")
+
         service = Service()
         browser = webdriver.Chrome(service=service, options=options)
+
         return browser
     except:
         options = webdriver.EdgeOptions()
@@ -2382,15 +2423,17 @@ def save_settings():
                            'save_txt': win.chTXT.isChecked(),
                            'save_raport': win.chJSON.isChecked(),
                            'save_csv': win.chCSV.isChecked()}
-
+    win.setting['Skip'] = win.chSkip.isChecked()
+    win.setting['Proxy'] = win.chProxy.isChecked()
+    win.setting['ProxyIP'] = win.lineProxy.text()
 
     with open(win.config, "w", encoding="utf-8") as file:
         json.dump(win.setting, file, ensure_ascii=False)
 
-    asyncio.run(sys.exit(app.exec()))
+    sys.exit(app.exec())
 
 def baner_click_event(*arg, **kwargs):
-   webbrowser.open_new("https://wykop.pl/tag/eKWpobieraczek")
+   webbrowser.open_new("https://wykop.pl/tag/ekwpobieraczek")
    # webbrowser.open_new("https://github.com/Rzezimioszek/eKW-pobieracz")
 
 def save_html(browser, path_without_ext):
@@ -2414,7 +2457,7 @@ def save_pdf(browser, path_without_ext):
 def save_json(info, path_without_ext):
 
     with open(f"{path_without_ext}.json", "w", encoding="utf-8") as file:
-        json.dump(info, file, ensure_ascii=False)
+        json.dump(info, file, ensure_ascii=False, indent=1)
 
 def save_csv(info, path_without_ext):
 
@@ -2475,6 +2518,13 @@ def save_kw_to_pdf(value: str):  #
             value = win.correct_kw_number(kw[0], kw[1])
             kw = value.split('/')
             gen_err(f"Poprawiono cyfrę kontrolną: {value}")
+
+
+        if win.chSkip.isChecked():
+
+            ext_list = [Path(p).stem for p in os.listdir(save_path)]
+            if value.replace('/', '.') in ext_list:
+                return
 
         browser = get_driver(win.chImg.isChecked())
 
@@ -2681,5 +2731,6 @@ if __name__ == "__main__":
     # app.setWindowIcon(QIcon(":/main/eKw.jpg"))
     win = Window()
     win.show()
-    asyncio.run(sys.exit(app.exec()))
+    #asyncio.run(sys.exit(app.exec()))
+    sys.exit(app.exec())
 
