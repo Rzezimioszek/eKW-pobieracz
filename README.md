@@ -41,6 +41,6 @@ nadal stare UI, ale obudowane prawdziwy potwór Frankeisteina
 
 
 
-![eKW07](https://github.com/Rzezimioszek/eKW-pobieracz/assets/105981729/3d482f6c-4de3-4672-8482-eb73abc94c53)
+![eKW08](https://github.com/user-attachments/assets/520a8df0-953e-4462-a0ac-a19f4b43ef5d)
 
 
