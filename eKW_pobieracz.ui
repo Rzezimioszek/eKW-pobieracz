@@ -26,7 +26,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieraczek 0.8</string>
+   <string>eKW pobieraczek 0.9</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -331,7 +331,7 @@ Pobierz z zakresu</string>
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>209</height>
+            <height>215</height>
            </size>
           </property>
           <property name="widgetResizable">
@@ -439,7 +439,7 @@ Pobierz z zakresu</string>
                  </size>
                 </property>
                 <property name="text">
-                 <string>PDF</string>
+                 <string>PDF (nie dla firefox)</string>
                 </property>
                </widget>
               </item>
@@ -478,7 +478,7 @@ Pobierz z zakresu</string>
                  </size>
                 </property>
                 <property name="text">
-                 <string>raport JSON</string>
+                 <string>JSON (wyszukiwanie)</string>
                 </property>
                </widget>
               </item>
@@ -492,6 +492,35 @@ Pobierz z zakresu</string>
                 </property>
                 <property name="text">
                  <string>CSV (jeden plik dla całego pobierania)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chJSON1o">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>JSON (DZIAŁ I-O)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chXlsx">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>XLSX (DZIAŁ I-O)</string>
                 </property>
                </widget>
               </item>
@@ -520,8 +549,7 @@ Pobierz z zakresu</string>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Złącz działy w jeden
-pdf</string>
+                 <string>Złącz działy w jeden pdf</string>
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
@@ -540,8 +568,7 @@ pdf</string>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Gdy brak aktualnej 
-pobieraj zupełną</string>
+                 <string>Gdy brak aktualnej pobieraj zupełną</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -560,8 +587,7 @@ pobieraj zupełną</string>
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Włącz lub wyłącz ładowanie grafik na stronie (może zmniejszyć zużycie ramu)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>ładowanie grafik
-strony</string>
+                 <string>ładowanie grafik strony</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -570,6 +596,12 @@ strony</string>
               </item>
               <item>
                <widget class="QCheckBox" name="chSkip">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>38</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Pomijaj już pobrane</string>
                 </property>
@@ -685,6 +717,100 @@ strony</string>
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="lblBrowser">
+                <property name="font">
+                 <font>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Domyślna przeglądarka</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cbBrowser">
+                <property name="editable">
+                 <bool>false</bool>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>chrome</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>edge</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string notr="true">firefox (test)</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="lblDzList">
+              <property name="font">
+               <font>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Pobieranie KW jeżeli...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chDzList">
+              <property name="text">
+               <string>Pobieraj KW jeżeli nr dz na liście</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLineEdit" name="lineDzList">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnOpenDzList">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>lista nr dz</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -854,12 +980,12 @@ strony</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>121</x>
-     <y>209</y>
+     <x>133</x>
+     <y>-185</y>
     </hint>
     <hint type="destinationlabel">
-     <x>244</x>
-     <y>210</y>
+     <x>269</x>
+     <y>-188</y>
     </hint>
    </hints>
   </connection>
@@ -870,12 +996,12 @@ strony</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>242</x>
-     <y>219</y>
+     <x>269</x>
+     <y>-188</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>202</y>
+     <x>157</x>
+     <y>-185</y>
     </hint>
    </hints>
   </connection>
@@ -890,8 +1016,56 @@ strony</string>
      <y>178</y>
     </hint>
     <hint type="destinationlabel">
-     <x>131</x>
-     <y>238</y>
+     <x>142</x>
+     <y>232</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chJSON1o</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>chXlsx</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>-70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>118</x>
+     <y>-52</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chDzList</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>lineDzList</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>179</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chDzList</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>btnOpenDzList</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>214</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>316</y>
     </hint>
    </hints>
   </connection>

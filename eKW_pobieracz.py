@@ -41,14 +41,19 @@ from PyQt5.uic import loadUi
 
 from PyQt5.QtGui import QIcon
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
 from eKW_pobieracz_ui import Ui_MainWindow
+
+import extract_html as eh
 
 # #### ##
 
 # eKW pobieracz 0.8
-eKWp_ver = "0.8"
+eKWp_ver = "0.9"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -529,7 +534,7 @@ class GenerateTurbo(QThread):
                 nk = win.correct_kw_number(sad, str(i))
                 logging.info(nk)
 
-                task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(nk)))
+                task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
                 j += 1
 
                 if j == n or i == top:
@@ -562,218 +567,7 @@ class GenerateTurbo(QThread):
                 break
             while self.is_paused:
                 time.sleep(1)
-        # self.quit()
-        # quit()
 
-        # return
-
-    async def save_kw_to_pdf_turbo(self, value: str): #
-
-        save_path = win.lineSave.text()
-
-        to_merge = []
-        merge = win.chMerge.isChecked()
-
-        zupelna = False
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = win.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-            if win.chSkip.isChecked():
-
-                ext_list = [Path(p).stem for p in os.listdir(save_path)]
-                if value.replace('/', '.') in ext_list:
-                    logging.info(f"Skiped {value}")
-                    return
-
-            browser = get_driver(win.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            await asyncio.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            await asyncio.sleep(1)
-
-            if win.save_raport or win.save_csv:
-
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-                if win.save_raport:
-                    save_json(info, path_without_ext)
-
-                if win.save_csv:
-                    save_csv(info, f"{save_path}/")
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if win.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if win.ch1o.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            if win.ch1s.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}s"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 2  # dział II
-
-            if win.ch2.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 3  # dział III
-
-            if win.ch3.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 4  # dział IV
-
-            if win.ch4.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                await asyncio.sleep(2)
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
 
     def kill(self):
         self.is_killed = True
@@ -1242,7 +1036,8 @@ class ListTurbo(QThread):
 
             value = value.replace("\n", "")
 
-            task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(value)))
+            # task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(value)))
+            task.append(asyncio.create_task(save_kw_to_pdf_turbo(value)))
             j += 1
             i += 1
 
@@ -1268,214 +1063,6 @@ class ListTurbo(QThread):
         gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
         msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
 
-    async def save_kw_to_pdf_turbo(self, value: str): #
-
-        save_path = win.lineSave.text()
-
-        to_merge = []
-        merge = win.chMerge.isChecked()
-
-        zupelna = False
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = win.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-
-            if win.chSkip.isChecked():
-
-                ext_list = [Path(p).stem for p in os.listdir(save_path)]
-                if value.replace('/', '.') in ext_list:
-                    logging.info(f"Skiped {value}")
-                    return
-
-            browser = get_driver(win.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            await asyncio.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            await asyncio.sleep(1)
-
-            if win.save_raport or win.save_csv:
-
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-                if win.save_raport:
-                    save_json(info, path_without_ext)
-
-                if win.save_csv:
-                    save_csv(info, f"{save_path}/")
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if win.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if win.ch1o.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            if win.ch1s.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}s"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 2  # dział II
-
-            if win.ch2.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 3  # dział III
-
-            if win.ch3.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 4  # dział IV
-
-            if win.ch4.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                await asyncio.sleep(2)
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
 
 
 
@@ -1525,7 +1112,8 @@ class Window(QMainWindow, Ui_MainWindow):
                                     'save_html': True,
                                     'save_txt': True,
                                     'save_raport': True,
-                                    'save_csv': True
+                                    'save_csv': True,
+                                    'save_json1o': True
                                     }
 
         self.setting['Music'] = False # self.exist_setting('Music', True)
@@ -1535,6 +1123,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.save_txt = self.exist_setting('Save')['save_txt']
         self.save_raport = self.exist_setting('Save')['save_raport']
         self.save_csv = self.exist_setting('Save')['save_csv']
+        self.save_json1o = self.exist_setting('Save')['save_json1o']
 
         self.chSkip.setChecked(self.exist_setting('Skip', True))
         self.chProxy.setChecked(self.exist_setting('Proxy', True))
@@ -1592,6 +1181,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.btnTurbo.clicked.connect(lambda: self.download_turbo())
 
         self.btnList.clicked.connect(self.open_file)
+        self.btnOpenDzList.clicked.connect(self.open_file_dz)
         self.btnSave.clicked.connect(self.open_dir)
 
         # self.btnGen.clicked.connect(self.generate_kws)
@@ -1662,6 +1252,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.runner = GenerateTurbo(save)
         self.runner.progress.connect(self.update_progress)
         self.runner.start()
+
     def update_progress(self, value):
         self.progressBar.setValue(value)
 
@@ -1671,6 +1262,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.chTXT.setChecked(self.save_txt)
         self.chJSON.setChecked(self.save_raport)
         self.chCSV.setChecked(self.save_csv)
+        self.chJSON1o.setChecked(self.save_json1o)
 
     def update_values(self):
         self.save_pdf = self.chPDF.isChecked()
@@ -1678,9 +1270,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.save_txt = self.chTXT.isChecked()
         self.save_raport = self.chJSON.isChecked()
         self.save_csv = self.chCSV.isChecked()
-
-
-
 
     def generate_kws(self, download: bool = False, turbo: bool = False):
 
@@ -1812,7 +1401,20 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.kw_list = path
             self.lineList.setText(path)
-            # self.kw_count = len(self.get_list())
+
+    def open_file_dz(self):
+
+        filetypes_option = (("pliki txt", "*.txt"), ("pliki kw", "*.kw"), ("Wszystkie pliki", "*.*"))
+        path = filedialog.askopenfilenames(title="Wybierz plik lub pliki", filetypes=filetypes_option)
+        if path is not None:
+            path = str(path).replace("('", "")
+            path = path.replace("',)", "\t")
+            path = path.replace("')", "\t")
+            path = path.replace("', '", "\t")
+            path = path.strip()
+
+
+            self.lineDzList.setText(path)
 
     def open_dir(self):
         path = filedialog.askdirectory(title="Wybierz folder")
@@ -1835,511 +1437,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
         return return_value
 
-
-    async def run_by_list_turbo(self, values = []):
-
-        try:
-            if len(values) < 1:
-                values = self.get_list()
-        except:
-            msg.showerror("Zła lista", "Plik wejściowy z listą kw niepoprawny.")
-            return
-
-        clear_log()
-
-        task = []
-        i = 0
-        j = 0
-        k = 0
-
-        # n = 5
-
-        n = self.spN.value()
-
-        for value in values:
-
-            if "/" not in value:
-                continue
-
-            value = value.replace("\n", "")
-
-            task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(value)))
-            j += 1
-            i += 1
-
-
-            if j == n or i == len(values):
-                k += 1
-                gen_err(f"Pętla: {k}")
-                await asyncio.gather(*task)
-                task.clear()
-                # await asyncio.sleep(9 * j)
-                j = 0
-
-        gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
-        msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
-
-
-
-    def run_by_list(self):
-
-        try:
-            values = self.get_list()
-        except:
-            msg.showerror("Zła lista", "Plik wejściowy z listą kw niepoprawny.")
-            return
-
-        clear_log()
-        for value in values:
-
-            if "/" not in value:
-                continue
-
-            value = value.replace("\n", "")
-            self.save_kw_to_pdf(value)
-
-        gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
-        msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
-
-
-    async def save_kw_to_pdf_turbo(self, value: str): #
-
-        save_path = self.lineSave.text()
-        pdf_bg = self.chBg.isChecked()
-
-        to_merge = []
-        merge = self.chMerge.isChecked()
-
-        zupelna = False
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = self.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-            browser = get_driver(self.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            await asyncio.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            await asyncio.sleep(1)
-
-            if win.save_raport:
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-
-                save_json(info, path_without_ext)
-                save_csv(info, f"{save_path}/")
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if self.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if self.ch1o.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            if self.ch1s.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}s"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 2  # dział II
-
-            if self.ch2.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 3  # dział III
-
-            if self.ch3.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 4  # dział IV
-
-            if self.ch4.isChecked():
-
-                await asyncio.sleep(2)
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-                    save_pdf(browser, path_without_ext)
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                await asyncio.sleep(2)
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
-
-    def save_kw_to_pdf(self, value: str): #
-
-        self.save_path = self.lineSave.text()
-        self.pdf_bg = self.chBg.isChecked()
-
-        zupelna = False
-
-        to_merge = []
-        merge = self.chMerge.isChecked()
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = self.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-            browser = get_driver(self.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            time.sleep(3) #
-
-            # elem = WebDriverWait(webdriver, 10).until(
-            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
-
-            # time.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            time.sleep(1)
-
-            # RAPORT JSON/TXT
-
-            if self.save_raport:
-
-                elements = browser.find_elements(By.XPATH, "//div[@class='left']")
-                i = 1
-                info = {}
-                keys = ['Numer', 'Typ', 'Oznaczenie', 'Zapis', 'Zamknięcie', 'Położenie', 'Właściciel']
-
-                for el in elements:
-                    val = str(el.get_attribute('innerHTML'))
-                    while "  " in val:
-                        val = val.replace("  ", " ")
-                    val = val.replace("\n", "")
-
-                    if i > 6:
-                        if keys[-1] not in info.keys():
-                            info[keys[-1]] = []
-
-                        if "</p>" in val:
-                            splt = val.split("</p>")
-                            for spl in splt:
-                                spl = spl.replace("<p>", "")
-                                spl = spl.replace("</p>", "")
-                                spl = spl.strip()
-                                if spl != "":
-                                    info[keys[-1]].append(spl)
-
-                    else:
-                        val = val.replace("<p>", "")
-                        val = val.replace("</p>", "")
-                        info[keys[i - 1]] = val.strip()
-
-                    i += 1
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}.json"
-
-                with open(cur_path, "w", encoding="utf-8") as file:
-                    json.dump(info, file, ensure_ascii=False)
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if self.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if self.ch1o.isChecked():
-
-                time.sleep(2) #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            if self.ch1s.isChecked():
-
-                time.sleep(2) #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 2  # dział II
-
-            if self.ch2.isChecked():
-
-                time.sleep(2) #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 3  # dział III
-
-            if self.ch3.isChecked():
-
-                time.sleep(2) #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 4  # dział IV
-
-            if self.ch4.isChecked():
-
-                time.sleep(2) #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
-
     def exist_setting(self, key, bool=False):
         if key in self.setting.keys():
             return self.setting[key]
@@ -2349,41 +1446,87 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 return ""
 
-
-def get_driver(img=True):
-
+def get_driver(img: bool = True):
 
 
+    main_browser = str(win.cbBrowser.currentText())[0]
+
+    # print(main_browser)
+
+    match main_browser:
+        case "c": # Chrome
+            try:
+                options = webdriver.ChromeOptions()
+
+                if not img:
+                    prefs = {"profile.managed_default_content_settings.images": 2}
+                    options.add_experimental_option("prefs", prefs)
 
 
-    try:
-        options = webdriver.ChromeOptions()
+                if win.chProxy.isChecked():
+                    proxy = win.lineProxy.text()
+                    options.add_argument(f"--proxy-server={proxy}")
 
-        if not img:
-            prefs = {"profile.managed_default_content_settings.images": 2}
-            options.add_experimental_option("prefs", prefs)
+                """        WINDOW_SIZE = "1920,1080"
+                options.add_argument("--headless=new")
+                options.add_argument("--window-size=%s" % WINDOW_SIZE)"""
+
+                service = Service()
+                browser = webdriver.Chrome(service=service, options=options)
+
+                return browser
+
+            except:
+
+                return get_driver(main_browser="edge")
+
+        case "e": # Edge
+            try:
+
+                options = webdriver.EdgeOptions()
+
+                if not img:
+                    prefs = {"profile.managed_default_content_settings.images": 2}
+                    options.add_experimental_option("prefs", prefs)
+
+                if win.chProxy.isChecked():
+                    proxy = win.lineProxy.text()
+                    options.add_argument(f"--proxy-server={proxy}")
+
+                service = Service()
+                browser = webdriver.Edge(service=service, options=options)
+                return browser
+
+            except:
+
+                return get_driver(main_browser="firefox")
 
 
-        if win.chProxy.isChecked():
-            proxy = win.lineProxy.text()
-            options.add_argument(f"--proxy-server={proxy}")
+        case "f": # Firefox
+            try:
+                options = webdriver.FirefoxOptions()
 
-        # options.add_argument("--headless=new")
+                if not img:
+                    prefs = {"profile.managed_default_content_settings.images": 2}
+                    options.set_preference("permissions.default.image", 2)
 
-        service = Service()
-        browser = webdriver.Chrome(service=service, options=options)
+                if win.chProxy.isChecked():
+                    proxy = win.lineProxy.text()
+                    options.add_argument(f"--proxy-server={proxy}")
 
-        return browser
-    except:
-        options = webdriver.EdgeOptions()
+                service = Service()
+                browser = webdriver.Firefox(service=service, options=options)
 
-        if not img:
-            prefs = {"profile.managed_default_content_settings.images": 2}
-            options.add_experimental_option("prefs", prefs)
+                return browser
 
-        service = Service()
-        browser = webdriver.Edge(service=service, options=options)
-        return browser
+            except:
+
+                print("Error")
+                return get_driver(main_browser="error")
+        case "s": # Safari
+            ...
+        case _:
+            return ''
 
 def clear_log():
 
@@ -2422,7 +1565,8 @@ def save_settings():
                            'save_html': win.chHTML.isChecked(),
                            'save_txt': win.chTXT.isChecked(),
                            'save_raport': win.chJSON.isChecked(),
-                           'save_csv': win.chCSV.isChecked()}
+                           'save_csv': win.chCSV.isChecked(),
+                           'save_json1o': win.chJSON1o.isChecked()}
     win.setting['Skip'] = win.chSkip.isChecked()
     win.setting['Proxy'] = win.chProxy.isChecked()
     win.setting['ProxyIP'] = win.lineProxy.text()
@@ -2438,8 +1582,19 @@ def baner_click_event(*arg, **kwargs):
 
 def save_html(browser, path_without_ext):
 
-   with open(f"{path_without_ext}.html", "w", encoding='utf-8') as f:
-       f.write(browser.page_source)
+    path = f"{path_without_ext}.html"
+
+    with open(path, "w", encoding='utf-8') as f:
+        f.write(browser.page_source)
+
+    if '1o.html' in path and win.chJSON1o.isChecked():
+        eh.page_to_json(path, os.path.dirname(path), win.chXlsx.isChecked())
+
+    print(path, win.chHTML.isChecked())
+
+    if not win.chHTML.isChecked():
+        print('-delete')
+        os.remove(path)
 
 def save_txt(browser, path_without_ext):
 
@@ -2447,7 +1602,10 @@ def save_txt(browser, path_without_ext):
        f.write(browser.find_element(By.XPATH, "//body").text)
 
 def save_pdf(browser, path_without_ext):
+    print('pdf')
+
     pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": win.pdf_bg})
+    # pdf = browser.print_page(background=win.pdf_bg)
     pdf_data = base64.b64decode(pdf["data"])
 
     single_pdf_path = f"{path_without_ext}.pdf"
@@ -2522,7 +1680,7 @@ def save_kw_to_pdf(value: str):  #
 
         if win.chSkip.isChecked():
 
-            ext_list = [Path(p).stem for p in os.listdir(save_path)]
+            ext_list = [str(Path(p).stem)[0:16] for p in os.listdir(save_path)]
             if value.replace('/', '.') in ext_list:
                 return
 
@@ -2564,7 +1722,7 @@ def save_kw_to_pdf(value: str):  #
             if win.save_csv:
                 save_csv(info, f"{save_path}/")
 
-        if not win.save_pdf and not win.save_txt and not win.save_html:
+        if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
             return
 
         elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
@@ -2603,7 +1761,26 @@ def save_kw_to_pdf(value: str):  #
 
             path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
 
-            if win.save_html: save_html(browser, path_without_ext)
+            if win.save_html or win.save_json1o or win.chDzList.isChecked():
+                save_html(browser, path_without_ext)
+
+                if win.chDzList.isChecked():
+                    dzs = eh.dz_from_page(f"{path_without_ext}.html").values()
+                    dz = [x['Numer działki'] for x in dzs]
+                    wanted = get_wanted_dz()
+
+                    # print([x['Numer działki'] for x in dzs])
+
+                    skip = True
+                    for w in wanted:
+                        if w in dz:
+                            skip = False
+                    if skip:
+                        # print("Download skiped")
+                        return
+
+
+
             if win.save_txt: save_txt(browser, path_without_ext)
             if win.save_pdf:
 
@@ -2718,9 +1895,242 @@ def save_kw_to_pdf(value: str):  #
         err = f"Błąd łączenia działów księgi: {value}"
         gen_err(err, write=True)
 
+async def save_kw_to_pdf_turbo(value: str): #
+
+        save_path = win.lineSave.text()
+
+        to_merge = []
+        merge = win.chMerge.isChecked()
+
+        zupelna = False
+
+        gen_err(f"Wprowadzona wartość: {value}")
+
+        try:
+            kw = value.split('/')
+
+            if 2 <= len(kw) < 3:
+                value = win.correct_kw_number(kw[0], kw[1])
+                kw = value.split('/')
+                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
 
 
+            if win.chSkip.isChecked():
 
+                ext_list = [Path(p).stem for p in os.listdir(save_path)]
+                if value.replace('/', '.') in ext_list:
+                    logging.info(f"Skiped {value}")
+                    return
+
+            browser = get_driver(win.chImg.isChecked())
+
+            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
+
+            await asyncio.sleep(3)
+
+            ### insert KW number
+
+            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
+            elem.send_keys(kw[0])
+
+            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
+            elem.send_keys(kw[1])
+
+            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
+            elem.send_keys(kw[2])
+
+            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
+            elem.send_keys(Keys.RETURN)
+
+            await asyncio.sleep(1)
+
+            if win.save_raport or win.save_csv:
+
+                info = get_dictionary(browser)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
+                if win.save_raport:
+                    save_json(info, path_without_ext)
+
+                if win.save_csv:
+                    save_csv(info, f"{save_path}/")
+
+            if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
+                return
+
+            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
+            elem.send_keys(Keys.RETURN)
+
+            ###
+        except:
+            zupelna = True
+            err = f"Treść zwykła wydruku niedostępna dla: {value}"
+            gen_err(err)
+
+        try:
+            if zupelna:
+                if win.chError.isChecked():
+                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
+                    elem.send_keys(Keys.RETURN)
+                    gen_err("Pobieranie treści zupełnej")
+                else:
+                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
+                    gen_err(err, write=True)
+                    return
+        except:
+            err = f"Błąd pobierania księgi: {value}"
+            gen_err(err, write=True)
+            return
+
+        try:
+            i = 1  # dział I-O
+
+            if win.ch1o.isChecked():
+
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
+
+                if win.save_html or win.save_json1o or win.chDzList.isChecked():
+                    save_html(browser, path_without_ext)
+
+                    if win.chDzList.isChecked():
+                        dzs = eh.dz_from_page(f"{path_without_ext}.html").values()
+                        dz = [x['Numer działki'] for x in dzs]
+                        wanted = get_wanted_dz()
+
+                        # print([x['Numer działki'] for x in dzs])
+
+                        skip = True
+                        for w in wanted:
+                            if w in dz:
+                                skip = False
+                        if skip:
+                            # print("Download skiped")
+                            return
+
+                if win.save_txt: save_txt(browser, path_without_ext)
+                if win.save_pdf:
+                    save_pdf(browser, path_without_ext)
+                    if merge:
+                        to_merge.append(f"{path_without_ext}.pdf")
+
+            if win.ch1s.isChecked():
+
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}s"
+
+                if win.save_html: save_html(browser, path_without_ext)
+                if win.save_txt: save_txt(browser, path_without_ext)
+                if win.save_pdf:
+                    save_pdf(browser, path_without_ext)
+                    if merge:
+                        to_merge.append(f"{path_without_ext}.pdf")
+
+            i = 2  # dział II
+
+            if win.ch2.isChecked():
+
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
+
+                if win.save_html: save_html(browser, path_without_ext)
+                if win.save_txt: save_txt(browser, path_without_ext)
+                if win.save_pdf:
+                    save_pdf(browser, path_without_ext)
+                    if merge:
+                        to_merge.append(f"{path_without_ext}.pdf")
+
+            i = 3  # dział III
+
+            if win.ch3.isChecked():
+
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
+
+                if win.save_html: save_html(browser, path_without_ext)
+                if win.save_txt: save_txt(browser, path_without_ext)
+                if win.save_pdf:
+                    save_pdf(browser, path_without_ext)
+                    if merge:
+                        to_merge.append(f"{path_without_ext}.pdf")
+
+            i = 4  # dział IV
+
+            if win.ch4.isChecked():
+
+                await asyncio.sleep(2)
+
+                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
+                elem.send_keys(Keys.RETURN)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}"
+
+                if win.save_html: save_html(browser, path_without_ext)
+                if win.save_txt: save_txt(browser, path_without_ext)
+                if win.save_pdf:
+                    save_pdf(browser, path_without_ext)
+                    if merge:
+                        to_merge.append(f"{path_without_ext}.pdf")
+
+            gen_err(f"Pobrano księgę: {value}")
+        except:
+
+            err = f"Błąd pobierania wybranych działów księgi: {value}"
+            gen_err(err, write=True)
+
+
+        try:
+            if merge and len(to_merge) > 0:
+
+                await asyncio.sleep(2)
+
+                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
+
+                out_pdf = pypdf.PdfWriter()
+                dst_path = f"{save_path}/{value.replace('/', '.')}.pdf"
+
+                for tm in to_merge:
+                    src_pdf = pypdf.PdfReader(tm)
+                    out_pdf.append_pages_from_reader(src_pdf)
+
+                with open(dst_path, "wb") as file:
+                    out_pdf.write(file)
+
+                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
+
+                for tm in to_merge:
+                    os.remove(tm)
+
+        except:
+            err = f"Błąd łączenia działów księgi: {value}"
+            gen_err(err, write=True)
+
+def get_wanted_dz() -> list:
+    path = win.lineDzList.text()
+
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+
+        return [lin.replace("\n", "") for lin in lines]
+    else:
+        return ['']
 
 if __name__ == "__main__":
     # main()
