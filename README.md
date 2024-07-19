@@ -5,7 +5,9 @@ Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.go
 
 Plik EXE po prawej stronie w Released
 
-!wymagane posiadanie przeglądarki Google Chrome lub EDGE!
+!wymagane:
+- posiadanie przeglądarki Google Chrome lub EDGE!
+-  Microsoft Visual C++ Redistributable (X86 i X64)
 
 	Do poprawnego działania program potrzebuje istneijącego numeru księgi wieczystej w formacie 
  	AA1A/NNNNNNNN/K, 
