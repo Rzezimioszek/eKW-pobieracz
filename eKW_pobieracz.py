@@ -43,6 +43,8 @@ from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 
+from PyQt5.QtGui import QPalette, QColor
+
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
@@ -1156,9 +1158,11 @@ class Window(QMainWindow, Ui_MainWindow):
                         "0":"0", "1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9"}
 
         ### icons
-        self.btnRun.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
+
+        """self.btnRun.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
+        self.btnGenSave.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))"""
+
         self.btnGen.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        self.btnGenSave.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.btnList.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.btnSave.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
         self.btnLog.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
@@ -2135,6 +2139,28 @@ def get_wanted_dz() -> list:
 if __name__ == "__main__":
     # main()
     app = QApplication(sys.argv)
+
+    app.setStyle('Fusion')
+
+    dark_palette = QPalette()
+
+    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.WindowText, Qt.white)
+    dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+    dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+    dark_palette.setColor(QPalette.Text, Qt.white)
+    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ButtonText, Qt.white)
+    dark_palette.setColor(QPalette.BrightText, Qt.red)
+    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+
+    app.setPalette(dark_palette)
+
+    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(save_settings)
