@@ -55,7 +55,7 @@ import extract_html as eh
 # #### ##
 
 # eKW pobieracz 0.8
-eKWp_ver = "0.9"
+eKWp_ver = "1.0a"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -1727,6 +1727,7 @@ def save_kw_to_pdf(value: str):  #
                 save_csv(info, f"{save_path}/")
 
         if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
+            browser.quit()
             return
 
         elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
@@ -1747,6 +1748,7 @@ def save_kw_to_pdf(value: str):  #
             else:
                 err = f"Błąd pobierania treści zupełnej księgi: {value}"
                 gen_err(err, write=True)
+                browser.quit()
                 return
     except:
         err = f"Błąd pobierania księgi: {value}"
@@ -1781,6 +1783,7 @@ def save_kw_to_pdf(value: str):  #
                             skip = False
                     if skip:
                         # print("Download skiped")
+                        browser.quit()
                         return
 
 
@@ -1960,6 +1963,7 @@ async def save_kw_to_pdf_turbo(value: str): #
                     save_csv(info, f"{save_path}/")
 
             if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
+                browser.quit()
                 return
 
             elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
@@ -1984,6 +1988,7 @@ async def save_kw_to_pdf_turbo(value: str): #
         except:
             err = f"Błąd pobierania księgi: {value}"
             gen_err(err, write=True)
+            browser.quit()
             return
 
         try:
@@ -2014,6 +2019,7 @@ async def save_kw_to_pdf_turbo(value: str): #
                                 skip = False
                         if skip:
                             # print("Download skiped")
+                            browser.quit()
                             return
 
                 if win.save_txt: save_txt(browser, path_without_ext)
@@ -2136,10 +2142,7 @@ def get_wanted_dz() -> list:
     else:
         return ['']
 
-if __name__ == "__main__":
-    # main()
-    app = QApplication(sys.argv)
-
+def set_fusion():
     app.setStyle('Fusion')
 
     dark_palette = QPalette()
@@ -2161,6 +2164,12 @@ if __name__ == "__main__":
     app.setPalette(dark_palette)
 
     app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+
+if __name__ == "__main__":
+    # main()
+    app = QApplication(sys.argv)
+
+    set_fusion()
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(save_settings)
