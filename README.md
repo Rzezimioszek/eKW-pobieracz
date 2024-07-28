@@ -20,15 +20,13 @@ Plik EXE po prawej stronie w Released
 	Lista powinna znajdować się w pliku tekstowym w którym każda księga zaczyna się od nowej linii.
 	Miejscem zapisu jest folder, gdzie zostaną zapisane księgi (podzielone na działy) w postaci: 
  	AA1A.NNNNNNNN.K_d.pdf
-	
-	Co nowego (0.7)
 
 * Zapis do formatu HTML (na razie mam tekst i linki)
 * Zapis do formatu TXT
 * Zapis raportu z wyszukania dla każdej księgi osobno (z okienka po wpisaniu numeru, ale przed wybraniem treści)  do JSON
 * Zapis raportu z wyszukania do jednego pliku(z okienka po wpisaniu numeru, ale przed wybraniem treści)  do CSV
 * Baner przenoszący kliknięciem do tagu
-* 8 bitowa muzyka (na razie wyłączona od podwersji 0.7a)
+* 8 bitowa muzyka (przywrcono w wersji 1.1)
 * Pobieranie/generowanie numerów KW nie mrozi okna programu
 * Tryb pauzy
 * Zatrzymywanie pobierania
@@ -42,7 +40,8 @@ nadal stare UI, ale obudowane prawdziwy potwór Frankeisteina
 	Jeśli brakuje jakiejś funkcji, a chciałbyś ją zobaczyć w programie to zapraszam do kontaktu.
 
 
+![1 1](https://github.com/user-attachments/assets/f82ceb67-87bb-47cd-917e-989d7ddaa6e9)
 
-![eKW08](https://github.com/user-attachments/assets/520a8df0-953e-4462-a0ac-a19f4b43ef5d)
+
 
 
