@@ -10,13 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>328</width>
-    <height>462</height>
+    <height>478</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>320</width>
-    <height>462</height>
+    <width>328</width>
+    <height>478</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -26,7 +26,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieraczek 1.0</string>
+   <string>eKW pobieraczek 1.1</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -185,6 +185,9 @@
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kod sądu np. BB1B&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
+            <property name="maxLength">
+             <number>4</number>
+            </property>
             <property name="placeholderText">
              <string>Kod sądu np. BB1B</string>
             </property>
@@ -197,6 +200,9 @@
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="maxLength">
+             <number>8</number>
             </property>
             <property name="placeholderText">
              <string>numer początkowy np. 1</string>
@@ -211,8 +217,61 @@
             <property name="text">
              <string/>
             </property>
+            <property name="maxLength">
+             <number>8</number>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
             <property name="placeholderText">
              <string>numer końcowy np. 99999999</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chParams">
+          <property name="text">
+           <string>Parametry</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="lineLast">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="maxLength">
+             <number>1</number>
+            </property>
+            <property name="placeholderText">
+             <string>Ostatnia cyfra numeru</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineControl">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="maxLength">
+             <number>1</number>
+            </property>
+            <property name="placeholderText">
+             <string>Cyfra kontrolna</string>
             </property>
            </widget>
           </item>
@@ -365,8 +424,8 @@ Pobierz z zakresu</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>271</width>
+             <y>-333</y>
+             <width>267</width>
              <height>620</height>
             </rect>
            </property>
@@ -397,7 +456,7 @@ Pobierz z zakresu</string>
                  <number>2</number>
                 </property>
                 <property name="maximum">
-                 <number>20</number>
+                 <number>25</number>
                 </property>
                 <property name="singleStep">
                  <number>1</number>
@@ -431,7 +490,7 @@ Pobierz z zakresu</string>
                  <number>2</number>
                 </property>
                 <property name="maximum">
-                 <number>20</number>
+                 <number>25</number>
                 </property>
                 <property name="value">
                  <number>5</number>
@@ -1039,12 +1098,12 @@ Pobierz z zakresu</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>-185</y>
+     <x>145</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
-     <x>269</x>
-     <y>-188</y>
+     <x>255</x>
+     <y>198</y>
     </hint>
    </hints>
   </connection>
@@ -1055,12 +1114,12 @@ Pobierz z zakresu</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>269</x>
-     <y>-188</y>
+     <x>255</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
-     <x>157</x>
-     <y>-185</y>
+     <x>169</x>
+     <y>196</y>
     </hint>
    </hints>
   </connection>
@@ -1071,12 +1130,12 @@ Pobierz z zakresu</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>103</x>
-     <y>178</y>
+     <x>101</x>
+     <y>163</y>
     </hint>
     <hint type="destinationlabel">
-     <x>142</x>
-     <y>232</y>
+     <x>101</x>
+     <y>211</y>
     </hint>
    </hints>
   </connection>
@@ -1087,12 +1146,12 @@ Pobierz z zakresu</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>93</x>
-     <y>-70</y>
+     <x>105</x>
+     <y>332</y>
     </hint>
     <hint type="destinationlabel">
-     <x>118</x>
-     <y>-52</y>
+     <x>130</x>
+     <y>348</y>
     </hint>
    </hints>
   </connection>
@@ -1103,12 +1162,12 @@ Pobierz z zakresu</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>179</x>
-     <y>296</y>
+     <x>190</x>
+     <y>682</y>
     </hint>
     <hint type="destinationlabel">
      <x>174</x>
-     <y>315</y>
+     <y>710</y>
     </hint>
    </hints>
   </connection>
@@ -1119,12 +1178,44 @@ Pobierz z zakresu</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>214</x>
-     <y>288</y>
+     <x>225</x>
+     <y>682</y>
     </hint>
     <hint type="destinationlabel">
-     <x>229</x>
-     <y>316</y>
+     <x>255</x>
+     <y>709</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chParams</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>lineLast</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>257</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>129</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chParams</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>lineControl</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>286</y>
     </hint>
    </hints>
   </connection>

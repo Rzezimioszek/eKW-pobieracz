@@ -288,7 +288,8 @@ def page_to_json(file_name, path, xlsx=False):
         except:
             ...
 
-def json_to_xlsx(path: str = r"D:\Python\KW - eKW pobieracz\scraped_KW\_dzial_1o.json" ):
+def json_to_xlsx(path: str = r"D:\lukasz\python\KW - eKW pobieracz\scraped_KW\goraszka\_dzial_1o.json" ):
+
     jsonloaded = ''
     line = ''
     with open(path, "r", encoding="utf-8") as file:

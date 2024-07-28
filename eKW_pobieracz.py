@@ -45,6 +45,10 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 
 from PyQt5.QtGui import QPalette, QColor
 
+from PyQt5.QtMultimedia import QSound
+
+
+
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
@@ -54,38 +58,9 @@ import extract_html as eh
 
 # #### ##
 
-# eKW pobieracz 0.8
-eKWp_ver = "1.0a"
+eKWp_ver = "1.1"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
-
-"""class MusicLooper(QThread):
-    def __init__(self):
-        super().__init__()
-        self.play = True
-
-    def run(self):
-        music_path = "res/boss_time.mp3"
-        if os.path.exists(music_path):
-            while True:
-                self.musicplayer = MediaPlayer(music_path)
-                self.musicplayer.play()
-                for _ in range(60):
-                    if not self.play:
-                        break
-                    else:
-                        time.sleep(1)
-                if not self.play:
-                    break
-
-    def change(self):
-
-        self.play = False
-        self.musicplayer.stop()
-        self.terminate()
-        self.quit()"""
-
-
 
 class GenerateStandard(QThread):
     progress = pyqtSignal(int)
@@ -178,7 +153,14 @@ class GenerateStandard(QThread):
                 logging.info(nk)
 
                 if self.download:
-                    save_kw_to_pdf(nk) #without self
+                    # save_kw_to_pdf(nk) #without self
+
+                    if win.chParams.isChecked():
+                        if win.lineControl.text().isdecimal() and win.lineLast.text().isdecimal():
+                            if nk[-1] == win.lineControl.text() and nk[-3] == win.lineLast.text():
+                                save_kw_to_pdf(nk)
+                    else:
+                        save_kw_to_pdf(nk)
                 else:
                     with open(path, "a") as file:
                         file.write(f"{nk}\n")
@@ -211,217 +193,6 @@ class GenerateStandard(QThread):
         # quit()
 
         # return
-
-    def save_kw_to_pdf(self, value: str):  #
-
-        save_path = win.lineSave.text()
-        pdf_bg = win.chBg.isChecked()
-
-        zupelna = False
-
-        to_merge = []
-        merge = win.chMerge.isChecked()
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = win.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-            browser = get_driver(win.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            time.sleep(3)  #
-
-            # elem = WebDriverWait(webdriver, 10).until(
-            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
-
-            # time.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            time.sleep(1)
-
-            if win.save_raport or win.save_csv:
-
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-                if win.save_raport:
-                    save_json(info, path_without_ext)
-
-                if win.save_csv:
-                    save_csv(info, f"{save_path}/")
-
-                # save_txt(browser, cur_path)
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if win.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if win.ch1o.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}o.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            if win.ch1s.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}s.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 2  # dział II
-
-            if win.ch2.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 3  # dział III
-
-            if win.ch3.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            i = 4  # dział IV
-
-            if win.ch4.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": self.pdf_bg})
-                pdf_data = base64.b64decode(pdf["data"])
-
-                cur_path = f"{self.save_path}/{value.replace('/', '.')}_{i}.pdf"
-                with open(cur_path, "wb") as f:
-                    f.write(pdf_data)
-
-                if merge:
-                    to_merge.append(cur_path)
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
 
     def kill(self):
         self.is_killed = True
@@ -536,8 +307,14 @@ class GenerateTurbo(QThread):
                 nk = win.correct_kw_number(sad, str(i))
                 logging.info(nk)
 
-                task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
-                j += 1
+                if win.chParams.isChecked():
+                    if win.lineControl.text().isdecimal() and win.lineLast.text().isdecimal():
+                        if nk[-1] == win.lineControl.text() and nk[-3] == win.lineLast.text():
+                            task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
+                            j += 1
+                else:
+                    task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
+                    j += 1
 
                 if j == n or i == top:
                     k += 1
@@ -569,7 +346,6 @@ class GenerateTurbo(QThread):
                 break
             while self.is_paused:
                 time.sleep(1)
-
 
     def kill(self):
         self.is_killed = True
@@ -640,218 +416,6 @@ class ListStandard(QThread):
 
         msg.showinfo("Generator", "Zakończono pobieranie z listy")
 
-    def save_kw_to_pdf(self, value: str):  #
-
-        self.save_path = win.lineSave.text()
-        self.pdf_bg = win.chBg.isChecked()
-
-        zupelna = False
-
-        to_merge = []
-        merge = win.chMerge.isChecked()
-
-        gen_err(f"Wprowadzona wartość: {value}")
-
-        try:
-            kw = value.split('/')
-
-            if 2 <= len(kw) < 3:
-                value = win.correct_kw_number(kw[0], kw[1])
-                kw = value.split('/')
-                gen_err(f"Poprawiono cyfrę kontrolną: {value}")
-
-            browser = get_driver(win.chImg.isChecked())
-
-            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-
-            time.sleep(3)  #
-
-            # elem = WebDriverWait(webdriver, 10).until(
-            #     EC.presence_of_element_located((By.ID, 'kodWydzialuInput')))
-
-            # time.sleep(3)
-
-            ### insert KW number
-
-            elem = browser.find_element(By.ID, 'kodWydzialuInput')  # Find the search box
-            elem.send_keys(kw[0])
-
-            elem = browser.find_element(By.NAME, 'numerKw')  # Find the search box
-            elem.send_keys(kw[1])
-
-            elem = browser.find_element(By.NAME, 'cyfraKontrolna')  # Find the search box
-            elem.send_keys(kw[2])
-
-            elem = browser.find_element(By.NAME, 'wyszukaj')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            time.sleep(1)
-
-            if win.save_raport:
-
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}"
-
-                save_json(info, path_without_ext)
-                save_csv(info, path_without_ext)
-
-            if not win.save_pdf and not win.save_txt and not win.save_html:
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"Treść zwykła wydruku niedostępna dla: {value}"
-            gen_err(err)
-
-        try:
-            if zupelna:
-                if win.chError.isChecked():
-                    elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
-                    elem.send_keys(Keys.RETURN)
-                    gen_err("Pobieranie treści zupełnej")
-                else:
-                    err = f"Błąd pobierania treści zupełnej księgi: {value}"
-                    gen_err(err, write=True)
-                    return
-        except:
-            err = f"Błąd pobierania księgi: {value}"
-            gen_err(err, write=True)
-            return
-
-        try:
-            i = 1  # dział I-O
-
-            if win.ch1o.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-O"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}_{i}o"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-
-                    save_pdf(browser, path_without_ext)
-
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            if win.ch1s.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział I-Sp"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}_{i}s"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-
-                    save_pdf(browser, path_without_ext)
-
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 2  # dział II
-
-            if win.ch2.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział II"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-
-                    save_pdf(browser, path_without_ext)
-
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 3  # dział III
-
-            if win.ch3.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział III"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-
-                    save_pdf(browser, path_without_ext)
-
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            i = 4  # dział IV
-
-            if win.ch4.isChecked():
-
-                time.sleep(2)  #
-
-                elem = browser.find_element(By.CSS_SELECTOR, '[value="Dział IV"]')  # Find the search box
-                elem.send_keys(Keys.RETURN)
-
-                path_without_ext = f"{self.save_path}/{value.replace('/', '.')}_{i}"
-
-                if win.save_html: save_html(browser, path_without_ext)
-                if win.save_txt: save_txt(browser, path_without_ext)
-                if win.save_pdf:
-
-                    save_pdf(browser, path_without_ext)
-
-                    if merge:
-                        to_merge.append(f"{path_without_ext}.pdf")
-
-            gen_err(f"Pobrano księgę: {value}")
-        except:
-
-            err = f"Błąd pobierania wybranych działów księgi: {value}"
-            gen_err(err, write=True)
-
-        try:
-            if merge and len(to_merge) > 0:
-
-                gen_err(f"Łączenie pojedynczych działów KW w jeden plik: {value}", log=True)
-
-                out_pdf = pypdf.PdfWriter()
-                dst_path = f"{self.save_path}/{value.replace('/', '.')}.pdf"
-
-                for tm in to_merge:
-                    src_pdf = pypdf.PdfReader(tm)
-                    out_pdf.append_pages_from_reader(src_pdf)
-
-                with open(dst_path, "wb") as file:
-                    out_pdf.write(file)
-
-                gen_err(f"Usuwanie pojedynczych działów KW: {value}", log=True)
-
-                for tm in to_merge:
-                    os.remove(tm)
-
-        except:
-            err = f"Błąd łączenia działów księgi: {value}"
-            gen_err(err, write=True)
-
     def kill(self):
         self.is_killed = True
 
@@ -886,128 +450,6 @@ class ListTurbo(QThread):
 
             asyncio.run(self.run_by_list_turbo())
             msg.showinfo("Generator", "Zakończono pobieranie z listy")
-
-    async def generator(self):
-
-        self.progress.emit(0)
-
-        sad = win.lineSign.text().strip().upper()
-        bot = win.lineFloor.text().strip()
-        top = win.lineRoof.text().strip()
-
-        clear_log()
-
-        if sad not in win.sady:
-            err = f"Brak oznaczenia sądu [{sad}], sprawdz plik res/sady.kw"
-            # gen_err(err, True)
-            return
-
-        try:
-            sad_value = [win.rep_dict[s] for s in sad]
-        except:
-            err = f"Oznaczenie sądu {sad} nieprawidłowe"
-            # gen_err(err, True)
-            return
-
-        if not bot.isdecimal() or not top.isdecimal():
-            err = f"Nieporawny przedział dla wartości dolnej lub górnej"
-            # gen_err(err, True)
-            return
-
-        bot = int(bot)
-        top = int(top)
-
-        if top > 99999999:
-            err = f"Wartość górna {top} powyżej dozwolonego przedziału zmiana na 99999999"
-            # gen_err(err)
-            top = 99999999
-
-        if bot < 1:
-            err = f"Wartość dolna {bot} poniżejj dozwolonego przedziału zmiana na 1"
-            # gen_err(err)
-            bot = 1
-
-        if bot > top:
-            err = f"Wartość dolna {bot} większa od górnej {top}"
-            # gen_err(err)
-            return
-
-        if not self.download:
-
-            # gen_err(f"Generowanie listy Kw dla sądu {sad} i przedziału {bot} do {top}")
-
-            filetypes = (("pliki txt", "*.txt"), ("Wszystkie pliki", "*.*"))
-            path = filedialog.asksaveasfilename(title="Zapisz plik txt", filetypes=filetypes)
-            if path is not None:
-                if not path.endswith(".txt"):
-                    path = path + ".txt"
-
-            with open(path, "w") as file:
-                file.write(f"")
-        else:
-            path = "c:/"
-            # gen_err(f"Pobieranie KW dla: {sad}/{bot}-{top}/n")
-
-        if path == "":
-            err = f"Niepodano scięzki zapisu"
-            # gen_err(err, True)
-            return
-
-        proc = 0
-        end = top
-
-        j = 0
-        k = 0
-
-        self.progress.emit(proc)
-        n = win.spN.value()
-
-        task = []
-
-        for i in range(bot, (top + 1)):
-
-            try:
-
-                nk = win.correct_kw_number(sad, str(i))
-                logging.info(nk)
-
-                task.append(asyncio.create_task(self.save_kw_to_pdf_turbo(nk)))
-                j += 1
-
-                if j == n or i == top:
-                    k += 1
-                    gen_err(f"Pętla: {k}")
-                    await asyncio.gather(*task)
-                    task.clear()
-
-                    proc = int(((i - bot) / (end - bot)) * 100)
-                    proc = 1 if proc <= 0 else proc
-                    proc = 100 if proc >= 100 else proc
-
-                    self.progress.emit(proc)
-
-                    if self.is_killed:
-                        break
-                    while self.is_paused:
-                        time.sleep(1)
-                    # await asyncio.sleep(9 * j)
-                    j = 0
-
-            except:
-                # gen_err(f"Bład generownaia w pozycji {i}", log=True, write=True)
-                logging.info(f"Bład generownaia w pozycji {i}")
-                return
-
-            if self.is_killed:
-                # gen_err(f"Wygenerowano {proc}% z zadanego zakresu", log=True)
-                self.is_killed = False
-                break
-            while self.is_paused:
-                time.sleep(1)
-        # self.quit()
-        # quit()
-
-        # return
     async def run_by_list_turbo(self, values=[]):
 
         self.progress.emit(0)
@@ -1065,9 +507,6 @@ class ListTurbo(QThread):
         gen_err("Wszystkie księgi wieczyste z zadania zostały pobrane")
         msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
 
-
-
-
     def kill(self):
         self.is_killed = True
 
@@ -1094,53 +533,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setting['startnum'] = ""
         self.setting['endnum'] = ""
 
-        if os.path.exists(self.config):
-            with open(self.config, "r", encoding="utf-8") as file:
-                line = file.readline()
-
-                try:
-                    self.setting = json.loads(line)
-                except:
-                    self.setting['kwlist'] = ""
-                    self.setting['savepath'] = "C:/"
-                    self.setting['startnum'] = ""
-                    self.setting['endnum'] = ""
-
-        self.kw_list = self.exist_setting('kwlist')
-        self.save_path = self.exist_setting('savepath')
-
-        if 'Save' not in self.setting.keys():
-            self.setting['Save'] = {'save_pdf': True,
-                                    'save_html': True,
-                                    'save_txt': True,
-                                    'save_raport': True,
-                                    'save_csv': True,
-                                    'save_json1o': True
-                                    }
-
-        self.setting['Music'] = False # self.exist_setting('Music', True)
-
-        self.save_pdf = self.exist_setting('Save')['save_pdf']
-        self.save_html = self.exist_setting('Save')['save_html']
-        self.save_txt = self.exist_setting('Save')['save_txt']
-        self.save_raport = self.exist_setting('Save')['save_raport']
-        self.save_csv = self.exist_setting('Save')['save_csv']
-        self.save_json1o = self.exist_setting('Save')['save_json1o']
-
-        self.chSkip.setChecked(self.exist_setting('Skip', True))
-        self.chProxy.setChecked(self.exist_setting('Proxy', True))
-        self.lineProxy.setText(self.exist_setting('ProxyIP'))
+        self.load_config()
 
 
-        self.load_format_checks()
-
-        self.lineSign.setText(self.exist_setting('sign'))
-        self.lineFloor.setText(self.exist_setting('startnum'))
-        self.lineRoof.setText(self.exist_setting('endnum'))
-
-
-        self.lineList.setText(self.kw_list)
-        self.lineSave.setText(self.save_path)
 
         self.pdf_bg = self.chBg.isChecked()
 
@@ -1170,11 +565,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
         gen_err(err="Uruchomiono program", log=True)
-
-        """ self.music_looper = MusicLooper()
-
-        if self.setting['Music']:
-            self.music_looper.start()"""
 
         self.runner = ListStandard([])
     def connectSignalsSlots(self):
@@ -1210,8 +600,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.chJSON.clicked.connect(lambda: self.update_values())
         self.chCSV.clicked.connect(lambda: self.update_values())
 
-
-
         self.action_github.triggered.connect(
             lambda: webbrowser.open_new('https://github.com/Rzezimioszek/eKW-pobieracz'))
         self.action_Wsparcie.triggered.connect(
@@ -1224,15 +612,79 @@ class Window(QMainWindow, Ui_MainWindow):
         self.btn_Coffe.clicked.connect(lambda: webbrowser.open_new('https://www.paypal.com/donate/?hosted_button_id=2AFDC9PRMGN3Q'))
         self.btn_Instrukcja.clicked.connect(lambda x: open_local_file('eKW pobieraczek - instrukcja.pdf'))
 
-        # self.action_muzyka.triggered.connect(lambda x: self.music_switch())
+        self.action_muzyka.triggered.connect(lambda x: self.music_switch())
+
+    def load_config(self):
+        if os.path.exists(self.config):
+            with open(self.config, "r", encoding="utf-8") as file:
+                line = file.readline()
+
+                try:
+                    self.setting = json.loads(line)
+                except:
+                    self.setting['kwlist'] = ""
+                    self.setting['savepath'] = "C:/"
+                    self.setting['startnum'] = ""
+                    self.setting['endnum'] = ""
+
+        self.kw_list = self.exist_setting('kwlist')
+        self.save_path = self.exist_setting('savepath')
+
+        if 'Save' not in self.setting.keys():
+            self.setting['Save'] = {'save_pdf': True,
+                                    'save_html': True,
+                                    'save_txt': True,
+                                    'save_raport': True,
+                                    'save_csv': True,
+                                    'save_json1o': True
+                                    }
+
+        self.setting['Music'] = self.exist_setting('Music', True)
+
+        if not self.setting['Music']:
+            sound.stop()
+
+        self.save_pdf = self.exist_setting('Save')['save_pdf']
+        self.save_html = self.exist_setting('Save')['save_html']
+        self.save_txt = self.exist_setting('Save')['save_txt']
+        self.save_raport = self.exist_setting('Save')['save_raport']
+        self.save_csv = self.exist_setting('Save')['save_csv']
+        self.save_json1o = self.exist_setting('Save')['save_json1o']
+
+        self.ch1o.setChecked(self.exist_setting('dzial_1o', True))
+        self.ch1s.setChecked(self.exist_setting('dzial_1s', True))
+        self.ch2.setChecked(self.exist_setting('dzial_2', True))
+        self.ch3.setChecked(self.exist_setting('dzial_3', True))
+        self.ch4.setChecked(self.exist_setting('dzial_4', True))
+
+        self.chSkip.setChecked(self.exist_setting('Skip', True))
+        self.chProxy.setChecked(self.exist_setting('Proxy', True))
+        self.lineProxy.setText(self.exist_setting('ProxyIP'))
+
+
+        self.load_format_checks()
+
+        self.lineSign.setText(self.exist_setting('sign'))
+        self.lineFloor.setText(self.exist_setting('startnum'))
+        self.lineRoof.setText(self.exist_setting('endnum'))
+
+        self.lineLast.setText(self.exist_setting('parms_last'))
+        self.lineControl.setText(self.exist_setting('parms_control'))
+
+
+        self.lineList.setText(self.kw_list)
+        self.lineSave.setText(self.save_path)
 
     def music_switch(self):
-        """if self.setting['Music']:
-            self.music_looper.change()
-        else:
-            self.music_looper.start()
 
-        self.setting['Music'] = not self.setting['Music']"""
+
+        self.setting['Music'] = not self.setting['Music']
+
+        if self.setting['Music']:
+            sound.play()
+        else:
+            sound.stop()
+
     def download_standard(self):
         self.runner = ListStandard(self.get_list())
         self.runner.progress.connect(self.update_progress)
@@ -1575,6 +1027,18 @@ def save_settings():
     win.setting['Proxy'] = win.chProxy.isChecked()
     win.setting['ProxyIP'] = win.lineProxy.text()
 
+    # save chapters preferences
+
+    win.setting['dzial_1o'] = win.ch1o.isChecked()
+    win.setting['dzial_1s'] = win.ch1s.isChecked()
+    win.setting['dzial_2'] = win.ch2.isChecked()
+    win.setting['dzial_3'] = win.ch3.isChecked()
+    win.setting['dzial_4'] = win.ch4.isChecked()
+
+    win.setting['parms_last'] = win.lineLast.text()
+    win.setting['parms_control'] = win.lineControl.text()
+
+
     with open(win.config, "w", encoding="utf-8") as file:
         json.dump(win.setting, file, ensure_ascii=False)
 
@@ -1594,7 +1058,7 @@ def save_html(browser, path_without_ext):
     if '1o.html' in path and win.chJSON1o.isChecked():
         eh.page_to_json(path, os.path.dirname(path), win.chXlsx.isChecked())
 
-    print(path, win.chHTML.isChecked())
+    print(path, win.chHTML.isChecked(), win.chXlsx.isChecked())
 
     if not win.chHTML.isChecked():
         print('-delete')
@@ -1606,7 +1070,7 @@ def save_txt(browser, path_without_ext):
        f.write(browser.find_element(By.XPATH, "//body").text)
 
 def save_pdf(browser, path_without_ext):
-    print('pdf')
+    # print(f"{path_without_ext}")
 
     pdf = browser.execute_cdp_cmd("Page.printToPDF", {"printBackground": win.pdf_bg})
     # pdf = browser.print_page(background=win.pdf_bg)
@@ -1921,6 +1385,8 @@ async def save_kw_to_pdf_turbo(value: str): #
                 kw = value.split('/')
                 gen_err(f"Poprawiono cyfrę kontrolną: {value}")
 
+            value = value.strip()
+
 
             if win.chSkip.isChecked():
 
@@ -2003,7 +1469,7 @@ async def save_kw_to_pdf_turbo(value: str): #
 
                 path_without_ext = f"{save_path}/{value.replace('/', '.')}_{i}o"
 
-                if win.save_html or win.save_json1o or win.chDzList.isChecked():
+                if win.save_html or win.chJSON1o.isChecked() or win.chDzList.isChecked():
                     save_html(browser, path_without_ext)
 
                     if win.chDzList.isChecked():
@@ -2174,6 +1640,14 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(save_settings)
     # app.setWindowIcon(QIcon(":/main/eKw.jpg"))
+
+
+
+    sound = QSound("res/boss_time.wav")
+    sound.setLoops(QSound.Infinite)
+    sound.play()
+
+
     win = Window()
     win.show()
     #asyncio.run(sys.exit(app.exec()))
