@@ -58,7 +58,7 @@ import extract_html as eh
 
 # #### ##
 
-eKWp_ver = "1.1"
+eKWp_ver = "1.1A"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -158,6 +158,12 @@ class GenerateStandard(QThread):
                     if win.chParams.isChecked():
                         if win.lineControl.text().isdecimal() and win.lineLast.text().isdecimal():
                             if nk[-1] == win.lineControl.text() and nk[-3] == win.lineLast.text():
+                                save_kw_to_pdf(nk)
+                        elif win.lineControl.text().isdecimal() and not win.lineLast.text().isdecimal():
+                            if nk[-1] == win.lineControl.text():
+                                save_kw_to_pdf(nk)
+                        elif not win.lineControl.text().isdecimal() and win.lineLast.text().isdecimal():
+                            if nk[-3] == win.lineLast.text():
                                 save_kw_to_pdf(nk)
                     else:
                         save_kw_to_pdf(nk)
@@ -312,6 +318,15 @@ class GenerateTurbo(QThread):
                         if nk[-1] == win.lineControl.text() and nk[-3] == win.lineLast.text():
                             task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
                             j += 1
+                    elif win.lineControl.text().isdecimal() and not win.lineLast.text().isdecimal():
+                        if nk[-1] == win.lineControl.text():
+                            task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
+                            j += 1
+                    elif not win.lineControl.text().isdecimal() and win.lineLast.text().isdecimal():
+                        if nk[-3] == win.lineLast.text():
+                            task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
+                            j += 1
+
                 else:
                     task.append(asyncio.create_task(save_kw_to_pdf_turbo(nk)))
                     j += 1
@@ -925,7 +940,11 @@ def get_driver(img: bool = True):
 
                 """        WINDOW_SIZE = "1920,1080"
                 options.add_argument("--headless=new")
-                options.add_argument("--window-size=%s" % WINDOW_SIZE)"""
+                options.add_argument("--window-size=%s" % WINDOW_SIZE)
+                options.add_argument("disable-gpu")"""
+
+                # options.add_argument("--start-minimized")
+                options.add_argument("--disable-search-engine-choice-screen")
 
                 service = Service()
                 browser = webdriver.Chrome(service=service, options=options)
