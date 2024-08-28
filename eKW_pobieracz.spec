@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='eKW_pobieracz',
+    name='eKW_pobieraczek',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

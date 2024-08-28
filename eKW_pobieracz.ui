@@ -10,13 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>328</width>
-    <height>478</height>
+    <height>521</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>328</width>
-    <height>478</height>
+    <height>521</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -26,11 +26,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>eKW pobieraczek 1.1</string>
+   <string>eKW pobieraczek 1.2</string>
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>ico/eKW.jpg</normaloff>ico/eKW.jpg</iconset>
+    <normaloff>C:/Users/BG-P/.designer/backup/ico/eKW.jpg</normaloff>C:/Users/BG-P/.designer/backup/ico/eKW.jpg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -73,12 +73,6 @@
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <property name="tabPosition">
-       <enum>QTabWidget::North</enum>
-      </property>
-      <property name="tabShape">
-       <enum>QTabWidget::Rounded</enum>
-      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -89,8 +83,20 @@
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
           <item>
            <widget class="QLineEdit" name="lineList">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ścieżka do listy z KW&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -101,6 +107,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnList">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku tekstowego z listą oznaczeń ksiąg wieczystych.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -113,8 +125,8 @@
         </item>
         <item>
          <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+          <property name="sizeType">
+           <enum>QSizePolicy::Preferred</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -127,13 +139,16 @@
         <item>
          <widget class="QPushButton" name="btnRun">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z listy z pliku txt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
           </property>
           <property name="text">
            <string>Pobierz pojedynczo</string>
@@ -152,7 +167,7 @@
         <item>
          <widget class="QPushButton" name="btnTurbo">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -231,13 +246,6 @@
          </layout>
         </item>
         <item>
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QCheckBox" name="chParams">
           <property name="text">
            <string>Parametry</string>
@@ -279,9 +287,6 @@
         </item>
         <item>
          <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
@@ -300,6 +305,7 @@
           </property>
           <property name="font">
            <font>
+            <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
@@ -312,51 +318,45 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <property name="topMargin">
-           <number>0</number>
+         <widget class="QPushButton" name="btnGenSave">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <item>
-           <widget class="QPushButton" name="btnGenSave">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z wskazanego zakresu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Pobierz z zakresu</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnGenSaveTurbo">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Turbo
-Pobierz z zakresu</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rozpocznij pobieranie ksiąg z wskazanego zakresu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Pobierz z zakresu</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnGenSaveTurbo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Turbo Pobierz z zakresu</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -391,9 +391,6 @@ Pobierz z zakresu</string>
         </item>
         <item>
          <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
@@ -424,7 +421,7 @@ Pobierz z zakresu</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-333</y>
+             <y>0</y>
              <width>267</width>
              <height>620</height>
             </rect>
@@ -440,6 +437,7 @@ Pobierz z zakresu</string>
              <widget class="QLabel" name="label">
               <property name="font">
                <font>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -456,7 +454,7 @@ Pobierz z zakresu</string>
                  <number>2</number>
                 </property>
                 <property name="maximum">
-                 <number>25</number>
+                 <number>50</number>
                 </property>
                 <property name="singleStep">
                  <number>1</number>
@@ -490,7 +488,7 @@ Pobierz z zakresu</string>
                  <number>2</number>
                 </property>
                 <property name="maximum">
-                 <number>25</number>
+                 <number>50</number>
                 </property>
                 <property name="value">
                  <number>5</number>
@@ -503,6 +501,7 @@ Pobierz z zakresu</string>
              <widget class="QLabel" name="label_3">
               <property name="font">
                <font>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -613,6 +612,7 @@ Pobierz z zakresu</string>
              <widget class="QLabel" name="label_4">
               <property name="font">
                <font>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -709,6 +709,7 @@ Pobierz z zakresu</string>
              <widget class="QLabel" name="label_2">
               <property name="font">
                <font>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -810,6 +811,7 @@ Pobierz z zakresu</string>
                <widget class="QLabel" name="lblBrowser">
                 <property name="font">
                  <font>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -846,6 +848,7 @@ Pobierz z zakresu</string>
              <widget class="QLabel" name="lblDzList">
               <property name="font">
                <font>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -889,13 +892,6 @@ Pobierz z zakresu</string>
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <widget class="QPushButton" name="btnLog">
@@ -919,6 +915,13 @@ Pobierz z zakresu</string>
               </item>
              </layout>
             </item>
+            <item>
+             <widget class="QCheckBox" name="chTheme">
+              <property name="text">
+               <string>Jasny motyw wymagany restart programu</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -933,7 +936,7 @@ Pobierz z zakresu</string>
         <item>
          <widget class="QPushButton" name="btn_Github">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -946,7 +949,7 @@ Pobierz z zakresu</string>
         <item>
          <widget class="QPushButton" name="btn_Instrukcja">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -958,9 +961,6 @@ Pobierz z zakresu</string>
         </item>
         <item>
          <spacer name="verticalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
@@ -972,7 +972,7 @@ Pobierz z zakresu</string>
         <item>
          <widget class="QPushButton" name="btn_Coffe">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -997,6 +997,9 @@ Pobierz z zakresu</string>
       </item>
       <item>
        <widget class="QPushButton" name="btnPause">
+        <property name="toolTip">
+         <string>Wstrzymaj lub wznów bierzącą operacje</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1017,6 +1020,9 @@ Pobierz z zakresu</string>
       </item>
       <item>
        <widget class="QPushButton" name="btnStop">
+        <property name="toolTip">
+         <string>Zatrzymanie bierzącej operacji. Opreacja dokończy ostanią pętle i się zatrzyma.</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1037,6 +1043,13 @@ Pobierz z zakresu</string>
       </item>
      </layout>
     </item>
+    <item>
+     <widget class="QLabel" name="lblStatus">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -1045,7 +1058,7 @@ Pobierz z zakresu</string>
      <x>0</x>
      <y>0</y>
      <width>328</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_O_programie">
