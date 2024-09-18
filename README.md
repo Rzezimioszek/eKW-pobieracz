@@ -36,7 +36,7 @@ W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją 
 Podziękowania za wsparcie w kodzie i wyłapywanie błędów
 ---
 * tisher2
-
+* piankma https://github.com/piankma
 
 
 
