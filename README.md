@@ -26,6 +26,7 @@ W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją 
 * Optymalizacja dla urządzeń z mniejszym Ram oraz Rom
 * Działanie na tych samych oknach
 * CLI
+* lista z wyborem sądu
 
 
 
