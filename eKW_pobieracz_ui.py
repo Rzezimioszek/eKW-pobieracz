@@ -497,7 +497,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "eKW pobieraczek 1.2"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "eKW pobieraczek 1.2.01"))
         self.lblBanner.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><img src=\":/baner/res/baner_310x60.jpg\"/></p></body></html>"))
         self.lineSave.setToolTip(_translate("MainWindow", "<html><head/><body><p>folder zapisu ksiąg</p></body></html>"))
         self.lineSave.setPlaceholderText(_translate("MainWindow", "folder zapisu ksiąg"))

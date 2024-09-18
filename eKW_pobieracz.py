@@ -8,6 +8,12 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from selenium.common.exceptions import (
+    TimeoutException, WebDriverException, NoSuchElementException
+)
+from urllib3.exceptions import MaxRetryError, NewConnectionError
+import time
+
 from eKW_functions import *
 from eKW_save import *
 from eKW_dialogs import *
@@ -40,10 +46,11 @@ from PyQt5.QtMultimedia import QSound
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # use highdpi icons
+#CE_0001-D.pdf
 
 from eKW_pobieracz_ui import Ui_MainWindow
 
-eKWp_ver = "1.2"
+eKWp_ver = "1.2.01"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -756,6 +763,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lineList.setText(self.kw_list)
         self.lineSave.setText(self.save_path)
 
+        self.cbBrowser.setCurrentText(self.exist_setting('engine'))
+        self.chImg.setChecked(self.exist_setting('image'))
+
     def music_switch(self):
 
         self.setting['Music'] = not self.setting['Music']
@@ -866,14 +876,40 @@ def get_driver(img: bool = True):
             try:
                 options = webdriver.ChromeOptions()
 
-                if not img:
-                    prefs = {"profile.managed_default_content_settings.images": 2}
-                    options.add_experimental_option("prefs", prefs)
+                ###
+                # Uwzgędniono poprawki od tisher2
+                prefs = {"profile.managed_default_content_settings.images":  2 if not img else 1, # Wyłącza obrazy, jeśli img=False
+                         "disk-cache-size": 4096,  # Optymalizuje cache
+                         "profile.default_content_setting_values.notifications": 2,  # Wyłącza powiadomienia
+                         "profile.default_content_setting_values.geolocation": 2,  # Wyłącza geolokalizację
+                         "credentials_enable_service": False,  # Wyłącza zapisywanie haseł
+                         "profile.password_manager_enabled": False  # Wyłącza menedżera haseł
+                         }
+
+
+
+                options.add_experimental_option("prefs", prefs)
 
 
                 if win.chProxy.isChecked():
                     proxy = win.lineProxy.text()
                     options.add_argument(f"--proxy-server={proxy}")
+
+                options.add_argument("--disable-extensions")  # Wyłącza rozszerzenia
+                options.add_argument("--disable-gpu")  # Wyłącza GPU (ważne przy problemach z GPU)
+                options.add_argument("--disable-webgl")  # Wyłącza WebGL
+                options.add_argument("--disable-infobars")  # Ukrywa informacje
+                options.add_argument("--no-sandbox")  # Wyłącza piaskownicę
+                options.add_argument("--disable-dev-shm-usage")  # Optymalizuje pamięć dzieloną
+                options.add_argument("--disable-popup-blocking")  # Wyłącza blokowanie wyskakujących okienek
+                options.add_argument("--disable-software-rasterizer")  # Wyłącza rasteryzację software'ową
+                options.add_argument("--disable-features=TranslateUI")  # Wyłącza tłumaczenie stron
+                options.add_argument("--disable-sync")  # Wyłącza synchronizację
+                options.add_argument(
+                    "--disable-background-timer-throttling")  # Wyłącza ograniczanie liczby timerów w tle
+                options.add_argument("--renderer-process-limit=2")  # Ograniczenie liczby procesów renderowania
+
+                ###
 
                 """        WINDOW_SIZE = "1920,1080"
                 options.add_argument("--headless=new")
@@ -885,6 +921,7 @@ def get_driver(img: bool = True):
 
                 service = Service()
                 browser = webdriver.Chrome(service=service, options=options)
+                browser.minimize_window()
 
                 return browser
 
@@ -897,16 +934,44 @@ def get_driver(img: bool = True):
 
                 options = webdriver.EdgeOptions()
 
-                if not img:
-                    prefs = {"profile.managed_default_content_settings.images": 2}
-                    options.add_experimental_option("prefs", prefs)
+                ###
+                # Uwzgędniono poprawki od tisher2
+                prefs = {"profile.managed_default_content_settings.images": 2 if not img else 1,
+                             # Wyłącza obrazy, jeśli img=False
+                             "disk-cache-size": 4096,  # Optymalizuje cache
+                             "profile.default_content_setting_values.notifications": 2,  # Wyłącza powiadomienia
+                             "profile.default_content_setting_values.geolocation": 2,  # Wyłącza geolokalizację
+                             "credentials_enable_service": False,  # Wyłącza zapisywanie haseł
+                             "profile.password_manager_enabled": False  # Wyłącza menedżera haseł
+                             }
+                options.add_experimental_option("prefs", prefs)
+
 
                 if win.chProxy.isChecked():
                     proxy = win.lineProxy.text()
                     options.add_argument(f"--proxy-server={proxy}")
 
+
+                options.add_argument("--disable-extensions")  # Wyłącza rozszerzenia
+                options.add_argument("--disable-gpu")  # Wyłącza GPU (ważne przy problemach z GPU)
+                options.add_argument("--disable-webgl")  # Wyłącza WebGL
+                options.add_argument("--disable-infobars")  # Ukrywa informacje
+                options.add_argument("--no-sandbox")  # Wyłącza piaskownicę
+                options.add_argument("--disable-dev-shm-usage")  # Optymalizuje pamięć dzieloną
+                options.add_argument("--disable-popup-blocking")  # Wyłącza blokowanie wyskakujących okienek
+                options.add_argument("--disable-software-rasterizer")  # Wyłącza rasteryzację software'ową
+                options.add_argument("--disable-features=TranslateUI")  # Wyłącza tłumaczenie stron
+                options.add_argument("--disable-sync")  # Wyłącza synchronizację
+                options.add_argument(
+                    "--disable-background-timer-throttling")  # Wyłącza ograniczanie liczby timerów w tle
+                options.add_argument("--renderer-process-limit=2")  # Ograniczenie liczby procesów renderowania
+
+                ###
+
+
                 service = Service()
                 browser = webdriver.Edge(service=service, options=options)
+                browser.minimize_window()
                 return browser
 
             except:
@@ -928,6 +993,7 @@ def get_driver(img: bool = True):
 
                 service = Service()
                 browser = webdriver.Firefox(service=service, options=options)
+                browser.minimize_window()
 
                 return browser
 
@@ -939,6 +1005,15 @@ def get_driver(img: bool = True):
             ...
         case _:
             return ''
+
+def safe_quit_browser(browser):
+    """Bezpieczne zamknięcie przeglądarki."""
+    if browser:
+        try:
+            browser.close()
+            browser.quit()
+        except Exception as e:
+            print(f"Błąd podczas zamykania przeglądarki: {e}")
 
 
 def save_settings():
@@ -969,6 +1044,10 @@ def save_settings():
     win.setting['parms_last'] = win.lineLast.text()
     win.setting['parms_control'] = win.lineControl.text()
 
+    win.setting['engine'] = win.cbBrowser.currentText()
+
+    win.setting['image'] = win.chImg.isChecked()
+
 
     with open(win.config, "w", encoding="utf-8") as file:
         json.dump(win.setting, file, ensure_ascii=False)
@@ -990,57 +1069,76 @@ def save_kw_to_pdf(value: str):  #
 
     gen_err(f"{value}\t- Wprowadzona wartość")
 
-    try:
-        kw = value.split('/')
-
-        if 2 <= len(kw) < 3:
-            value = win.correct_kw_number(kw[0], kw[1])
+    max_retries = 5
+    retries = 0
+    browser = None
+    while retries < max_retries:
+        try:
             kw = value.split('/')
-            gen_err(f"{value}\t- Poprawiono cyfrę kontrolną")
+
+            if 2 <= len(kw) < 3:
+                value = win.correct_kw_number(kw[0], kw[1])
+                kw = value.split('/')
+                gen_err(f"{value}\t- Poprawiono cyfrę kontrolną")
 
 
-        if win.chSkip.isChecked():
+            if win.chSkip.isChecked():
 
-            ext_list = [str(Path(p).stem)[0:16] for p in os.listdir(save_path)]
-            if value.replace('/', '.') in ext_list:
+                ext_list = [str(Path(p).stem)[0:16] for p in os.listdir(save_path)]
+                if value.replace('/', '.') in ext_list:
+                    return
+
+            browser = get_driver(win.chImg.isChecked())
+            browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
+
+            time.sleep(1)  # 3 -> 1
+
+            insert_kw_number(browser, kw)
+
+            time.sleep(1)
+
+            if win.save_raport or win.save_csv:
+
+                info = get_dictionary(browser)
+
+                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
+                if win.save_raport:
+                    save_json(info, path_without_ext)
+
+                if win.save_csv:
+                    save_csv(info, f"{save_path}/")
+
+            if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
+                safe_quit_browser(browser)
                 return
 
-        browser = get_driver(win.chImg.isChecked())
+            # Sprawdzenie i próba pobrania
 
-        browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
+            try:
+                elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
+                elem.send_keys(Keys.RETURN)
 
-        time.sleep(1)  # 3 -> 1
+            except NoSuchElementException:
+                zupelna = True
+                err = f"{value}\t- Treść zwykła wydruku niedostępna dla"
+                gen_err(err)
+                break  # Wyjście z pętli, przejście do obsługi treści zupełnej
 
-        insert_kw_number(browser, kw)
+            break  # Wszystko przebiegło pomyślnie, wyjście z pętli
 
-        time.sleep(1)
-
-        if win.save_raport or win.save_csv:
-
-            info = get_dictionary(browser)
-
-            path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-            if win.save_raport:
-                save_json(info, path_without_ext)
-
-            if win.save_csv:
-                save_csv(info, f"{save_path}/")
-
-        if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
-            browser.close()
-            browser.quit()
-            return
-
-        elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-        elem.send_keys(Keys.RETURN)
-
-        ###
-    except:
-        zupelna = True
-        err = f"{value}\t- Treść zwykła wydruku niedostępna dla"
-        gen_err(err)
+        except (TimeoutException, WebDriverException, MaxRetryError, NewConnectionError) as e:
+            # Błędy sieciowe lub przeglądarki
+            retries += 1
+            gen_err(f"Błąd przeglądarki lub sieci: {str(e)}. Ponawianie próby {retries}/{max_retries}...", log=True)
+            safe_quit_browser(browser)
+            time.sleep(10)  # Poczekaj przed ponowną próbą
 
 
+            if retries == max_retries:
+                gen_err(f"Przekroczono maksymalną liczbę prób pobierania danych dla {value}.", write=True)
+                return
+
+    # Drugi blok try/except dla obsługi wyjątków specyficznych dla treści księgi
     try:
         if zupelna:
             if win.chError.isChecked():
@@ -1053,11 +1151,10 @@ def save_kw_to_pdf(value: str):  #
                 browser.close()
                 browser.quit()
                 return
-    except:
-        err = f"{value}\t- Błąd pobierania księgi"
+    except Exception as e:
+        err = f"{value}\t- Błąd pobierania księgi: {str(e)}"
         gen_err(err, write=True)
-        browser.close()
-        browser.quit()
+        safe_quit_browser(browser)
         return
 
     try:
@@ -1091,12 +1188,15 @@ def save_kw_to_pdf(value: str):  #
             to_merge.append(save_page(browser, "Dział IV", path_without_ext, 4))
 
         gen_err(f"{value}\t- Pobrano księgę")
-    except:
+    except Exception as e:
 
-        err = f"{value}\t- Błąd pobierania wybranych działów księgi"
+        err = f"{value}\t- Błąd pobierania wybranych działów księgi: {str(e)}"
         gen_err(err, write=True)
-        browser.close()
-        browser.quit()
+        safe_quit_browser(browser)
+        return
+
+    finally:
+        safe_quit_browser(browser)
 
     try:
         if win.save_pdf and merge and len(to_merge) > 0:
@@ -1118,12 +1218,9 @@ def save_kw_to_pdf(value: str):  #
             for tm in to_merge:
                 os.remove(tm)
 
-    except:
-        err = f"{value}\t- Błąd łączenia działów księgi"
+    except Exception as e:
+        err = f"{value}\t- Błąd łączenia działów księgi: {str(e)}"
         gen_err(err, write=True)
-
-    browser.close()
-    browser.quit()
 
 
 async def save_kw_to_pdf_turbo(value: str):
@@ -1135,73 +1232,96 @@ async def save_kw_to_pdf_turbo(value: str):
 
         gen_err(f"{value}\t- Wprowadzona wartość")
 
-        try:
-            kw = value.split('/')
+        max_retries = 5
+        retries = 0
+        browser = None
 
-            if 2 <= len(kw) < 3:
-                value = win.correct_kw_number(kw[0], kw[1])
+        while retries < max_retries:
+            try:
                 kw = value.split('/')
-                gen_err(f"{value}\t- Poprawiono cyfrę kontrolną")
 
-            value = value.strip()
+                if 2 <= len(kw) < 3:
+                    value = win.correct_kw_number(kw[0], kw[1])
+                    kw = value.split('/')
+                    gen_err(f"{value}\t- Poprawiono cyfrę kontrolną")
+
+                value = value.strip()
 
 
-            if win.chSkip.isChecked():
+                if win.chSkip.isChecked():
 
-                ext_list = [Path(p).stem for p in os.listdir(save_path)]
-                if value.replace('/', '.') in ext_list:
-                    logging.info(f"Skiped {value}")
+                    ext_list = [Path(p).stem for p in os.listdir(save_path)]
+                    if value.replace('/', '.') in ext_list:
+                        logging.info(f"Skiped {value}")
+                        safe_quit_browser(browser)
+                        return
+
+                browser = get_driver(win.chImg.isChecked())
+
+                tries = 0
+
+                while True:
+                    if tries > 3:
+                        gen_err(f"{value} - Nieudane połącznie po liczbie prób: {tries}", log=True)
+                        return
+
+                    tries += 1
+                    browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
+                    if browser.page_source.find("The requested URL was rejected") > 0:
+                        gen_err(f"{value} - Odrzucono żądanie {tries}. Chwila przerwy...", log=True)
+
+                        await asyncio.sleep(30)
+                        continue
+                    break
+
+                await asyncio.sleep(1) # 3 -> 1
+
+                insert_kw_number(browser, kw)
+
+                await asyncio.sleep(1) # Czekaj na załadowanie wyników
+
+                if win.save_raport or win.save_csv:
+
+                    info = get_dictionary(browser)
+
+                    path_without_ext = f"{save_path}/{value.replace('/', '.')}"
+                    if win.save_raport:
+                        save_json(info, path_without_ext)
+
+                    if win.save_csv:
+                        save_csv(info, f"{save_path}/")
+
+                if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
+                    safe_quit_browser(browser)
                     return
 
-            browser = get_driver(win.chImg.isChecked())
+                # Sprawdzenie i próba pobrania
+                try:
+                    elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
+                    elem.send_keys(Keys.RETURN)
+                except NoSuchElementException:
+                    zupelna = True
+                    err = f"{value}\t- Treść zwykła wydruku niedostępna dla"
+                    gen_err(err)
+                    break  # Wyjście z pętli, przejście do obsługi treści zupełnej
 
-            tries = 0
+                break  # Wszystko przebiegło pomyślnie, wyjście z pętli
 
-            while True:
-                if tries > 3:
-                    gen_err(f"{value} - Nieudane połącznie po liczbie prób: {tries}", log=True)
+
+
+            except (TimeoutException, WebDriverException, MaxRetryError, NewConnectionError) as e:
+
+                # Błędy sieciowe lub przeglądarki
+                retries += 1
+                gen_err(f"Błąd przeglądarki lub sieci: {str(e)}. Ponawianie próby {retries}/{max_retries}...", log=True)
+                safe_quit_browser(browser)
+                await asyncio.sleep(10)  # Poczekaj przed ponowną próbą
+
+                if retries == max_retries:
+                    gen_err(f"Przekroczono maksymalną liczbę prób pobierania danych dla {value}.", write=True)
                     return
 
-                tries += 1
-                browser.get('https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW')
-                if browser.page_source.find("The requested URL was rejected") > 0:
-                    gen_err(f"{value} - Odrzucono żądanie {tries}. Chwila przerwy...", log=True)
-
-                    await asyncio.sleep(30)
-                    continue
-                break
-
-            await asyncio.sleep(1) # 3 -> 1
-
-            insert_kw_number(browser, kw)
-
-            await asyncio.sleep(1)
-
-            if win.save_raport or win.save_csv:
-
-                info = get_dictionary(browser)
-
-                path_without_ext = f"{save_path}/{value.replace('/', '.')}"
-                if win.save_raport:
-                    save_json(info, path_without_ext)
-
-                if win.save_csv:
-                    save_csv(info, f"{save_path}/")
-
-            if not win.save_pdf and not win.save_txt and not win.save_html and not win.chJSON1o:
-                browser.close()
-                browser.quit()
-                return
-
-            elem = browser.find_element(By.NAME, 'przyciskWydrukZwykly')  # Find the search box
-            elem.send_keys(Keys.RETURN)
-
-            ###
-        except:
-            zupelna = True
-            err = f"{value} - Treść zwykła wydruku niedostępna"
-            gen_err(err)
-
+        # Drugi blok try/except dla obsługi wyjątków specyficznych dla treści księgi
         try:
             if zupelna:
                 if win.chError.isChecked():
@@ -1211,14 +1331,12 @@ async def save_kw_to_pdf_turbo(value: str):
                 else:
                     err = f"{value}\t- Błąd pobierania treści zupełnej księgi"
                     gen_err(err, write=True)
-                    browser.close()
-                    browser.quit()
+                    safe_quit_browser(browser)
                     return
-        except:
+        except Exception as e:
             err = f"{value}\t- Błąd pobierania księgi"
             gen_err(err, write=True)
-            browser.close()
-            browser.quit()
+            safe_quit_browser(browser)
             return
 
         try:
@@ -1252,12 +1370,15 @@ async def save_kw_to_pdf_turbo(value: str):
                 to_merge.append(save_page(browser, "Dział IV", path_without_ext, 4))
 
             gen_err(f"{value}\t- Pobrano księgę")
-        except:
+        except Exception as e:
 
-            err = f"{value}\t- Błąd pobierania wybranych działów księgi"
+            err = f"{value}\t- Błąd pobierania wybranych działów księgi: {str(e)}"
             gen_err(err, write=True)
-            browser.close()
-            browser.quit()
+            safe_quit_browser(browser)
+            return
+
+        finally:
+            safe_quit_browser(browser)
 
 
         try:
@@ -1282,12 +1403,11 @@ async def save_kw_to_pdf_turbo(value: str):
                 for tm in to_merge:
                     os.remove(tm)
 
-        except:
-            err = f"{value}\t- Błąd łączenia działów księgi"
+        except Exception as e:
+            err = f"{value}\t- Błąd łączenia działów księgi: {str(e)}"
             gen_err(err, write=True, log=True)
 
-        browser.close()
-        browser.quit()
+
 
 
 def save_page(browser, dzial, path_without_ext, i):
