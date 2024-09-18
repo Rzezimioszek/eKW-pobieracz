@@ -28,6 +28,16 @@ W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją 
 * CLI
 * lista z wyborem sądu
 
+  
+---
+
+# Off topic
+
+Podziękowania za wsparcie w kodzie i wyłapywanie błędów
+---
+* tisher2
+
+
 
 
 
