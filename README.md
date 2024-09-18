@@ -29,7 +29,8 @@ W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją 
 * Działanie na tych samych oknach
 * CLI
 * lista z wyborem sądu
-
+* nagrać tutorial z korzystania na YT
+* aktualizacja pdf z instrukcją
   
 ---
 
