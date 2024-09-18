@@ -1,5 +1,9 @@
 # eKW pobieraczek (eKW-pobieracz)
 
+UWAGA !
+Program oparty na QT jest dalej rozwijany w branch Legacy.
+W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją skończyć.
+
 Wątek na wykopie https://wykop.pl/tag/ekwpobieraczek
 Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.gov.pl
 
