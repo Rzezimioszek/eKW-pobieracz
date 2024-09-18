@@ -10,6 +10,8 @@ UWAGA !
 Program oparty na QT jest dalej rozwijany w branch Legacy 
 https://github.com/Rzezimioszek/eKW-pobieracz/tree/legacy
 
+Aktualny plik exe znajdziesz tu: https://github.com/Rzezimioszek/eKW-pobieracz/releases/tag/1.2.01
+
 ---
 
 W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją skończyć.
