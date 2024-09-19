@@ -50,7 +50,7 @@ QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # use highdpi icons
 
 from eKW_pobieracz_ui import Ui_MainWindow
 
-eKWp_ver = "1.2.01"
+eKWp_ver = "1.2.02"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -1334,7 +1334,7 @@ async def save_kw_to_pdf_turbo(value: str):
                     safe_quit_browser(browser)
                     return
         except Exception as e:
-            err = f"{value}\t- Błąd pobierania księgi"
+            err = f"{value}\t- Błąd pobierania księgi: {str(e)}"
             gen_err(err, write=True)
             safe_quit_browser(browser)
             return

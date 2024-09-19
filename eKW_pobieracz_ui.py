@@ -19,7 +19,7 @@ class Ui_MainWindow(object):
         MainWindow.setMinimumSize(QtCore.QSize(328, 521))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("C:/Users/BG-P/.designer/backup/ico/eKW.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/ico/eKW.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -497,7 +497,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "eKW pobieraczek 1.2.01"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "eKW pobieraczek 1.2.02"))
         self.lblBanner.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><img src=\":/baner/res/baner_310x60.jpg\"/></p></body></html>"))
         self.lineSave.setToolTip(_translate("MainWindow", "<html><head/><body><p>folder zapisu ksiąg</p></body></html>"))
         self.lineSave.setPlaceholderText(_translate("MainWindow", "folder zapisu ksiąg"))
