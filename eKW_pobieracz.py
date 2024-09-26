@@ -1,3 +1,6 @@
+from logging import lastResort
+
+from docutils.nodes import topic
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -17,6 +20,7 @@ import time
 from eKW_functions import *
 from eKW_save import *
 from eKW_dialogs import *
+from eKW_generator import kw_from_range
 
 import asyncio
 from pathlib import Path
@@ -46,15 +50,19 @@ from PyQt5.QtMultimedia import QSound
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # use highdpi icons
-#CE_0001-D.pdf
 
 from eKW_pobieracz_ui import Ui_MainWindow
 
-eKWp_ver = "1.2.02"
+eKWp_ver = "1.2.03"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 theme = get_theme()
+
+import concurrent.futures
+import threading
+
+lock = threading.Lock()
 
 
 class GenerateStandard(QThread):
@@ -423,11 +431,12 @@ class GenerateTurbo(QThread):
 class ListStandard(QThread):
     progress = pyqtSignal(int)
     stat = pyqtSignal(str)
-    def __init__(self, values):
+    def __init__(self, values, generator: bool = False):
         super().__init__()
         self.is_paused = False
         self.is_killed = False
         self.values = values
+        self.generator = generator
         self.save_path = ""
         self.pdf_bg = ""
 
@@ -438,48 +447,56 @@ class ListStandard(QThread):
 
         mess = "Start pobieranie standardowe"
         self.stat.emit(mess)
+        workers = win.spN.value()
 
-        try:
-            values = self.values
-        except:
-            err = "Plik wejściowy z listą kw niepoprawny."
-            self.stat.emit(err)
-            msg.showerror("Zła lista", err)
-            return
+        if not self.generator:
 
-        clear_log()
-        i = 0
-        end = len(values)
+            try:
+                values = self.values
+            except:
+                err = "Plik wejściowy z listą kw niepoprawny."
+                self.stat.emit(err)
+                msg.showerror("Zła lista", err)
+                return
 
-        proc = 0
+            clear_log()
+            i = 0
+            end = len(values)
 
-        self.progress.emit(proc)
+            proc = 0
 
-        for value in values:
-
-            if "/" not in value:
-                continue
-
-            value = value.replace("\n", "")
-            save_kw_to_pdf(value) # without self
-
-            i += 1
-
-            proc = int((i/end) * 100)
-            proc = 1 if proc <= 0 else proc
-            proc = 100 if proc >= 100 else proc
             self.progress.emit(proc)
 
-            while self.is_paused:
-                self.stat.emit('Pauza')
-                time.sleep(1)
-                self.stat.emit('')
-                time.sleep(1)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+                tasks = [executor.submit(save_kw_to_pdf, value.replace("\n", "")) for value in values]
+                concurrent.futures.wait(tasks)
+                msg.showinfo("Generator", "Zakończono pobieranie z listy")
 
-            if self.is_killed:
-                self.is_paused = False
-                self.stat.emit('Zakończono')
-                break
+
+
+        else:
+
+            sad = win.lineSign.text().strip().upper()
+            bot = int(win.lineFloor.text().strip())
+            top = int(win.lineRoof.text().strip())
+
+            last = -1
+            control = -1
+
+            if win.chParams.isChecked():
+                if win.lineLast.text().isdecimal():
+                    last = int(win.lineLast.text())
+                if win.lineControl.text().isdecimal():
+                    control = int(win.lineControl.text())
+
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+                tasks = [executor.submit(save_kw_to_pdf, value) for value in kw_from_range(sad, bot, top, last, control)]
+                while self.is_paused:
+                    time.sleep(1)
+                concurrent.futures.wait(tasks)
+                msg.showinfo("Generator", "Zakończono pobieranie z zakresu")
+
 
         if self.is_killed:
             err = f"Zakończono pobieranie na: {proc}%"
@@ -494,7 +511,11 @@ class ListStandard(QThread):
             self.stat.emit(err)
             msg.showinfo("Zakończono pobieranie", "Wszystkie księgi wieczyste z zadania zostały pobrane")
 
-        msg.showinfo("Generator", "Zakończono pobieranie z listy")
+        self.progress.emit(100)
+
+
+
+
 
     def kill(self):
         self.is_killed = True
@@ -785,7 +806,7 @@ class Window(QMainWindow, Ui_MainWindow):
             case 'gs':
                 self.runner = GenerateStandard(False)
             case 'gsd':
-                self.runner = GenerateStandard(True)
+                self.runner = ListStandard(set(['', '']), True)
             case 'gtd':
                 self.runner = GenerateTurbo(True)
             case _:
@@ -1006,14 +1027,14 @@ def get_driver(img: bool = True):
         case _:
             return ''
 
-def safe_quit_browser(browser):
+def safe_quit_browser(browser, value: str = ""):
     """Bezpieczne zamknięcie przeglądarki."""
     if browser:
         try:
             browser.close()
             browser.quit()
         except Exception as e:
-            print(f"Błąd podczas zamykania przeglądarki: {e}")
+            print(f"Błąd podczas zamykania przeglądarki{value}: {e}")
 
 
 def save_settings():
@@ -1057,7 +1078,7 @@ def save_settings():
     sys.exit(app.exec())
 
 
-def save_kw_to_pdf(value: str):  #
+def save_kw_to_pdf(value: str, flag: int = 0):  #
 
     save_path = win.lineSave.text()
     pdf_bg = win.chBg.isChecked()
@@ -1073,6 +1094,7 @@ def save_kw_to_pdf(value: str):  #
     retries = 0
     browser = None
     while retries < max_retries:
+        browser = None
         try:
             kw = value.split('/')
 
@@ -1144,7 +1166,7 @@ def save_kw_to_pdf(value: str):  #
             if win.chError.isChecked():
                 elem = browser.find_element(By.NAME, 'przyciskWydrukZupelny')  # Find the search box
                 elem.send_keys(Keys.RETURN)
-                gen_err("{value}\t- Pobieranie treści zupełnej")
+                gen_err(f"{value}\t- Pobieranie treści zupełnej")
             else:
                 err = f"{value}\t- Błąd pobierania treści zupełnej księgi"
                 gen_err(err, write=True)
@@ -1192,7 +1214,16 @@ def save_kw_to_pdf(value: str):  #
 
         err = f"{value}\t- Błąd pobierania wybranych działów księgi: {str(e)}"
         gen_err(err, write=True)
-        safe_quit_browser(browser)
+
+        if flag < 3:
+
+            safe_quit_browser(browser, value)
+
+            flag += 1
+            gen_err(f"{value}\t- próba pobrania numer {flag + 1}", log=True)
+            save_kw_to_pdf(value, flag)
+
+
         return
 
     finally:
@@ -1421,42 +1452,48 @@ def save_page(browser, dzial, path_without_ext, i):
     elif dzial == 'Dział I-Sp':
         path_without_ext = f"{path_without_ext}s"
 
+    global lock
+    # miejsce na lock
 
-    if dzial == 'Dział I-O':
-        if win.save_html or win.chJSON1o.isChecked() or win.chDzList.isChecked():
-            save_html(browser,
-                      path_without_ext,
-                      win.chJSON1o.isChecked(),
-                      win.chHTML.isChecked(),
-                      win.chXlsx.isChecked())
+    with lock:
 
-            if win.chDzList.isChecked():
-                dzs = eh.dz_from_page(f"{path_without_ext}.html").values()
-                dz = [x['Numer działki'] for x in dzs]
-                wanted = get_wanted_dz(win.lineDzList.text())
+        if dzial == 'Dział I-O':
+            if win.save_html or win.chJSON1o.isChecked() or win.chDzList.isChecked():
+                save_html(browser,
+                          path_without_ext,
+                          win.chJSON1o.isChecked(),
+                          win.chHTML.isChecked(),
+                          win.chXlsx.isChecked())
 
-                # print([x['Numer działki'] for x in dzs])
+                if win.chDzList.isChecked():
+                    dzs = eh.dz_from_page(f"{path_without_ext}.html").values()
+                    dz = [x['Numer działki'] for x in dzs]
+                    wanted = get_wanted_dz(win.lineDzList.text())
 
-                skip = True
-                for w in wanted:
-                    if w in dz:
-                        skip = False
-                if skip:
-                    # print("Download skiped")
-                    browser.quit()
-                    return
-    else:
-        if win.save_html:
-            save_html(browser,
-                      path_without_ext,
-                      win.chJSON1o.isChecked(),
-                      win.chHTML.isChecked(),
-                      win.chXlsx.isChecked())
+                    # print([x['Numer działki'] for x in dzs])
 
-    if win.save_txt: save_txt(browser, path_without_ext)
-    if win.save_pdf:
-        save_pdf(browser, path_without_ext, win.chBg.isChecked())
-        return f"{path_without_ext}.pdf"
+                    skip = True
+                    for w in wanted:
+                        if w in dz:
+                            skip = False
+                    if skip:
+                        # print("Download skiped")
+                        browser.quit()
+                        return
+        else:
+            if win.save_html:
+                save_html(browser,
+                          path_without_ext,
+                          win.chJSON1o.isChecked(),
+                          win.chHTML.isChecked(),
+                          win.chXlsx.isChecked())
+
+        if win.save_txt: save_txt(browser, path_without_ext)
+        if win.save_pdf:
+            save_pdf(browser, path_without_ext, win.chBg.isChecked())
+            return f"{path_without_ext}.pdf"
+
+
     return None
 
 
