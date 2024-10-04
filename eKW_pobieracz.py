@@ -53,7 +53,7 @@ QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # use highdpi icons
 
 from eKW_pobieracz_ui import Ui_MainWindow
 
-eKWp_ver = "1.2.03"
+eKWp_ver = "1.2.04"
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -61,6 +61,7 @@ theme = get_theme()
 
 import concurrent.futures
 import threading
+from threading import Event
 
 lock = threading.Lock()
 
@@ -440,10 +441,17 @@ class ListStandard(QThread):
         self.save_path = ""
         self.pdf_bg = ""
 
+        ##
+        self.event = Event()
+        self.event_kill = Event()
+
     # @pyqtSlot()
     def run(self):
         self.is_killed = False
         self.is_paused = False
+
+        self.event.set()
+        self.event_kill.set()
 
         mess = "Start pobieranie standardowe"
         self.stat.emit(mess)
@@ -468,7 +476,7 @@ class ListStandard(QThread):
             self.progress.emit(proc)
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-                tasks = [executor.submit(save_kw_to_pdf, value.replace("\n", "")) for value in values]
+                tasks = [executor.submit(save_kw_to_pdf, value.replace("\n", ""), event=self.event, event_kill=self.event_kill) for value in values]
                 concurrent.futures.wait(tasks)
                 msg.showinfo("Generator", "Zakończono pobieranie z listy")
 
@@ -491,7 +499,7 @@ class ListStandard(QThread):
 
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-                tasks = [executor.submit(save_kw_to_pdf, value) for value in kw_from_range(sad, bot, top, last, control)]
+                tasks = [executor.submit(save_kw_to_pdf, value, event=self.event, event_kill=self.event_kill) for value in kw_from_range(sad, bot, top, last, control)]
                 while self.is_paused:
                     time.sleep(1)
                 concurrent.futures.wait(tasks)
@@ -499,12 +507,13 @@ class ListStandard(QThread):
 
 
         if self.is_killed:
-            err = f"Zakończono pobieranie na: {proc}%"
+            #err = f"Zakończono pobieranie na: {proc}%"
+            err = f"Zakończono pobieranie przez użytkownika"
             gen_err(err)
             # win.progressBar.setValue(0)
             self.stat.emit(err)
             self.progress.emit(proc)
-            msg.showinfo("Zakończono pobieranie", f"Pobrano {proc}% wybranych ksiąg")
+            msg.showinfo("Zakończono pobieranie", f"Pobieranie zatrzymane przez użytkownika")
         else:
             err = "Wszystkie księgi wieczyste z zadania zostały pobrane"
             gen_err(err)
@@ -520,13 +529,16 @@ class ListStandard(QThread):
     def kill(self):
         self.is_killed = True
         self.is_paused = False
+        self.event_kill.clear()
         self.stat.emit("Kończenie działania przez użytkownika")
 
     def pause(self):
         if self.is_paused:
+            self.event.set()
             self.is_paused = False
             self.stat.emit("Wznowiono")
         else:
+            self.event.clear()
             self.is_paused = True
             self.stat.emit("Wstrzymywanie działania")
 
@@ -1078,7 +1090,14 @@ def save_settings():
     sys.exit(app.exec())
 
 
-def save_kw_to_pdf(value: str, flag: int = 0):  #
+def save_kw_to_pdf(value: str, flag: int = 0, event=Event().set(), event_kill=Event().set()):  #
+
+
+    if not event.is_set():
+        event.wait()
+
+    if not event_kill.is_set():
+        return
 
     save_path = win.lineSave.text()
     pdf_bg = win.chBg.isChecked()
