@@ -5,12 +5,6 @@ rep_dict = {"X": "10", "A": "11", "B": "12", "C": "13", "D": "14", "E": "15",
                         "S": "28", "T": "29", "U": "30", "W": "31", "Y": "32", "Z": "33",
                         "0":"0", "1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9"}
 
-def correct_number_lenght(number: int) -> str:
-    while len(str(number)) < 8:
-        number = f"0{number}"
-
-    return number
-
 
 def kw_from_range(sad: str, bot: int, top: int, last: int = -1, control: int = -1) -> str:
     """ Generowanie numerów ksiąg wieczystych z zakresu
@@ -26,18 +20,16 @@ def kw_from_range(sad: str, bot: int, top: int, last: int = -1, control: int = -
     params = [True, True]
 
     if bot > top:
-        temp = bot
-        top = bot
-        bot = temp
+        bot, top = top, bot
 
     for number in range(bot, (top + 1)):
 
-        number = correct_number_lenght(number)
-        temp_kw = sad_value + [x for x in number]
+        number = f'{number:08}'
+        temp_kw = sad_value + [*number]
         ctlr_dig = 0
 
-        for k in range(len(wei)):
-            ctlr_dig += (wei[k] * int(temp_kw[k]))
+        for w, t in zip(wei, temp_kw):
+            ctlr_dig += w * int(t)
 
         ctlr_dig = ctlr_dig % 10
 
