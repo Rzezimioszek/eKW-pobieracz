@@ -1,8 +1,8 @@
 {
  "color": "Blue",
  "theme": "System",
- "threads": 6,
- "save_path": "D:\\Python\\KW - eKW pobieracz\\test",
+ "threads": 10,
+ "save_path": "D:\\lukasz\\python\\KW - eKW pobieracz\\test",
  "already_exist": false,
  "page_background": false,
  "page_image": true,
@@ -21,8 +21,8 @@
  "save_json": false,
  "save_xlsx": false,
  "dzial_1o": true,
- "dzial_1s": false,
+ "dzial_1s": true,
  "dzial_2": true,
  "dzial_3": true,
- "dzial_4": false
+ "dzial_4": true
 }

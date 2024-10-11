@@ -8,7 +8,6 @@ import threading
 from threading import Event
 import webbrowser
 
-from scipy.constants import value
 
 from eKW_engine import *
 from eKW_functions import *
@@ -474,7 +473,7 @@ class Task(ft.Container):
         file_picker = ft.FilePicker(on_result=lambda x: self.change_file(x))
 
         list_buttons = ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN, controls=[
-                                    ft.IconButton(ft.icons.EDIT, tooltip="Zmiana pliku",
+                                    ft.IconButton(ft.icons.FOLDER_OPEN, tooltip="Zmiana pliku",
                                                  on_click=lambda x: file_picker.pick_files(allow_multiple=False)),
                                     file_picker,
                                     ft.IconButton(ft.icons.LIST, tooltip="Parametry",
@@ -500,7 +499,7 @@ class Task(ft.Container):
 
         btn_row = ft.Row(alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             controls=[generator_buttons, list_buttons,
-            self.btn_play, self.btn_play_gen, self.btn_gen_gen,
+            self.btn_gen_gen, self.btn_play, self.btn_play_gen,
             ft.IconButton(
                 icon=ft.icons.PAUSE,
                 tooltip="Pauza",
