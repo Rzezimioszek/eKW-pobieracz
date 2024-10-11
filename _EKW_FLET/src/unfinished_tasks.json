@@ -1,0 +1,44 @@
+{
+ "0": {
+  "ttask": "list",
+  "value": {
+   "name": "lista_testowa_4.txt",
+   "path": "D:\\Python\\KW - eKW pobieracz\\lista_testowa_4.txt"
+  },
+  "genval": {
+   "sad": "",
+   "cbot": "",
+   "ctop": "",
+   "last": "",
+   "control": ""
+  }
+ },
+ "1": {
+  "ttask": "generator",
+  "value": {
+   "name": "Zakres: 2 - 10000",
+   "path": "src/temp_list.txt"
+  },
+  "genval": {
+   "sad": "KR1M",
+   "cbot": "2",
+   "ctop": "10000",
+   "last": "0",
+   "control": "1"
+  }
+ },
+ "2": {
+  "ttask": "list",
+  "value": {
+   "name": "lista_testowa_5.txt",
+   "path": "D:\\Python\\KW - eKW pobieracz\\lista_testowa_5.txt"
+  },
+  "genval": {
+   "sad": "",
+   "cbot": "",
+   "ctop": "",
+   "last": "",
+   "control": ""
+  }
+ }
+}

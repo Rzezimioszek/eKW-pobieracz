@@ -1,0 +1,319 @@
+[07.10.24 09:10:58]KR1M/00029783/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:10:58]KR1M/00032393/6	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:10:58]ZA1T/00023841/6	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:10:59]KS1B/00058660/9	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:10:59]KS1B/00005856/4	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:26]GL1T/00089468/4	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:26]KA1Y/00009094/1	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:26]KA1B/00034808/4	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:26]KA1B/00047529/8	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:26]GL1T/00038999/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:54]OP1U/00006784/1	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:54]CZ1L/00000007/0	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:54]CZ1L/00011280/7	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:54]KA1Y/00054421/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:11:55]OP1U/00009679/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:12:20]RA1L/00013187/7	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:12:20]RA1L/00034833/4	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:18:14]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:18:14]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:18:14]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:19:50]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:19:50]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 09:19:50]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: save_page() missing 1 required positional argument: 'parms'
+[07.10.24 13:13:40]PL1C/00011876/3	- Błąd łączenia działów księgi: [Errno 2] No such file or directory: 'D:/Python/KW - eKW pobieracz/test/PL1C.00011876.3_1o.pdf'
+[07.10.24 13:13:42]PL1C/00013840/6	- Błąd łączenia działów księgi: [Errno 2] No such file or directory: 'D:/Python/KW - eKW pobieracz/test/PL1C.00013840.6_1o.pdf'
+[07.10.24 13:13:42]PL1C/00050819/1	- Błąd łączenia działów księgi: [Errno 2] No such file or directory: 'D:/Python/KW - eKW pobieracz/test/PL1C.00050819.1_1o.pdf'
+[08.10.24 12:32:52]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF777AAB645+29573]
+	(No symbol) [0x00007FF777A20470]
+	(No symbol) [0x00007FF7778DB6EA]
+	(No symbol) [0x00007FF77792F815]
+	(No symbol) [0x00007FF77792FA6C]
+	(No symbol) [0x00007FF77797B917]
+	(No symbol) [0x00007FF77795733F]
+	(No symbol) [0x00007FF7779786BC]
+	(No symbol) [0x00007FF7779570A3]
+	(No symbol) [0x00007FF7779212DF]
+	(No symbol) [0x00007FF777922441]
+	GetHandleVerifier [0x00007FF777DDC58D+3375821]
+	GetHandleVerifier [0x00007FF777E27987+3684039]
+	GetHandleVerifier [0x00007FF777E1CDAB+3640043]
+	GetHandleVerifier [0x00007FF777B6B7C6+816390]
+	(No symbol) [0x00007FF777A2B77F]
+	(No symbol) [0x00007FF777A275A4]
+	(No symbol) [0x00007FF777A27740]
+	(No symbol) [0x00007FF777A1659F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[08.10.24 12:40:15]KR1M/00029783/3	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF777AAB645+29573]
+	(No symbol) [0x00007FF777A20470]
+	(No symbol) [0x00007FF7778DB6EA]
+	(No symbol) [0x00007FF77792F815]
+	(No symbol) [0x00007FF77792FA6C]
+	(No symbol) [0x00007FF77797B917]
+	(No symbol) [0x00007FF77795733F]
+	(No symbol) [0x00007FF7779786BC]
+	(No symbol) [0x00007FF7779570A3]
+	(No symbol) [0x00007FF7779212DF]
+	(No symbol) [0x00007FF777922441]
+	GetHandleVerifier [0x00007FF777DDC58D+3375821]
+	GetHandleVerifier [0x00007FF777E27987+3684039]
+	GetHandleVerifier [0x00007FF777E1CDAB+3640043]
+	GetHandleVerifier [0x00007FF777B6B7C6+816390]
+	(No symbol) [0x00007FF777A2B77F]
+	(No symbol) [0x00007FF777A275A4]
+	(No symbol) [0x00007FF777A27740]
+	(No symbol) [0x00007FF777A1659F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[08.10.24 12:40:30]KA1B/00034808/4	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF777AAB645+29573]
+	(No symbol) [0x00007FF777A20470]
+	(No symbol) [0x00007FF7778DB6EA]
+	(No symbol) [0x00007FF77792F815]
+	(No symbol) [0x00007FF77792FA6C]
+	(No symbol) [0x00007FF77797B917]
+	(No symbol) [0x00007FF77795733F]
+	(No symbol) [0x00007FF7779786BC]
+	(No symbol) [0x00007FF7779570A3]
+	(No symbol) [0x00007FF7779212DF]
+	(No symbol) [0x00007FF777922441]
+	GetHandleVerifier [0x00007FF777DDC58D+3375821]
+	GetHandleVerifier [0x00007FF777E27987+3684039]
+	GetHandleVerifier [0x00007FF777E1CDAB+3640043]
+	GetHandleVerifier [0x00007FF777B6B7C6+816390]
+	(No symbol) [0x00007FF777A2B77F]
+	(No symbol) [0x00007FF777A275A4]
+	(No symbol) [0x00007FF777A27740]
+	(No symbol) [0x00007FF777A1659F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[08.10.24 12:56:57]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: name 'lock' is not defined
+[08.10.24 12:56:57]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: name 'lock' is not defined
+[08.10.24 12:56:58]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: name 'lock' is not defined
+[08.10.24 13:32:51]BB1B/00000001/4	- Błąd pobierania księgi: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[name="przyciskWydrukZupelny"]"}
+  (Session info: chrome=129.0.6668.90); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF777AAB645+29573]
+	(No symbol) [0x00007FF777A20470]
+	(No symbol) [0x00007FF7778DB6EA]
+	(No symbol) [0x00007FF77792F815]
+	(No symbol) [0x00007FF77792FA6C]
+	(No symbol) [0x00007FF77797B917]
+	(No symbol) [0x00007FF77795733F]
+	(No symbol) [0x00007FF7779786BC]
+	(No symbol) [0x00007FF7779570A3]
+	(No symbol) [0x00007FF7779212DF]
+	(No symbol) [0x00007FF777922441]
+	GetHandleVerifier [0x00007FF777DDC58D+3375821]
+	GetHandleVerifier [0x00007FF777E27987+3684039]
+	GetHandleVerifier [0x00007FF777E1CDAB+3640043]
+	GetHandleVerifier [0x00007FF777B6B7C6+816390]
+	(No symbol) [0x00007FF777A2B77F]
+	(No symbol) [0x00007FF777A275A4]
+	(No symbol) [0x00007FF777A27740]
+	(No symbol) [0x00007FF777A1659F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[08.10.24 13:32:51]BB1B/00000003/8	- Błąd pobierania księgi: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[name="przyciskWydrukZupelny"]"}
+  (Session info: chrome=129.0.6668.90); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF777AAB645+29573]
+	(No symbol) [0x00007FF777A20470]
+	(No symbol) [0x00007FF7778DB6EA]
+	(No symbol) [0x00007FF77792F815]
+	(No symbol) [0x00007FF77792FA6C]
+	(No symbol) [0x00007FF77797B917]
+	(No symbol) [0x00007FF77795733F]
+	(No symbol) [0x00007FF7779786BC]
+	(No symbol) [0x00007FF7779570A3]
+	(No symbol) [0x00007FF7779212DF]
+	(No symbol) [0x00007FF777922441]
+	GetHandleVerifier [0x00007FF777DDC58D+3375821]
+	GetHandleVerifier [0x00007FF777E27987+3684039]
+	GetHandleVerifier [0x00007FF777E1CDAB+3640043]
+	GetHandleVerifier [0x00007FF777B6B7C6+816390]
+	(No symbol) [0x00007FF777A2B77F]
+	(No symbol) [0x00007FF777A275A4]
+	(No symbol) [0x00007FF777A27740]
+	(No symbol) [0x00007FF777A1659F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[09.10.24 09:34:33]Message: unknown error: unhandled inspector error: {"code":-32000,"message":"Printing failed"}
+  (Session info: chrome=129.0.6668.90)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6C23CB675+29573]
+	(No symbol) [0x00007FF6C23404A0]
+	(No symbol) [0x00007FF6C21FB6EA]
+	(No symbol) [0x00007FF6C21E359A]
+	(No symbol) [0x00007FF6C21E1CC1]
+	(No symbol) [0x00007FF6C21E25BF]
+	(No symbol) [0x00007FF6C21E24F0]
+	(No symbol) [0x00007FF6C21FF633]
+	(No symbol) [0x00007FF6C22A6D3E]
+	(No symbol) [0x00007FF6C22772FA]
+	(No symbol) [0x00007FF6C22986BC]
+	(No symbol) [0x00007FF6C22770A3]
+	(No symbol) [0x00007FF6C22412DF]
+	(No symbol) [0x00007FF6C2242441]
+	GetHandleVerifier [0x00007FF6C26FC5BD+3375821]
+	GetHandleVerifier [0x00007FF6C27479B7+3684039]
+	GetHandleVerifier [0x00007FF6C273CDDB+3640043]
+	GetHandleVerifier [0x00007FF6C248B7F6+816390]
+	(No symbol) [0x00007FF6C234B7AF]
+	(No symbol) [0x00007FF6C23475D4]
+	(No symbol) [0x00007FF6C2347770]
+	(No symbol) [0x00007FF6C23365CF]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[09.10.24 09:35:34]OP1U/00057529/8	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF6C23CB675+29573]
+	(No symbol) [0x00007FF6C23404A0]
+	(No symbol) [0x00007FF6C21FB6EA]
+	(No symbol) [0x00007FF6C224F815]
+	(No symbol) [0x00007FF6C224FA6C]
+	(No symbol) [0x00007FF6C229B917]
+	(No symbol) [0x00007FF6C227733F]
+	(No symbol) [0x00007FF6C22986BC]
+	(No symbol) [0x00007FF6C22770A3]
+	(No symbol) [0x00007FF6C22412DF]
+	(No symbol) [0x00007FF6C2242441]
+	GetHandleVerifier [0x00007FF6C26FC5BD+3375821]
+	GetHandleVerifier [0x00007FF6C27479B7+3684039]
+	GetHandleVerifier [0x00007FF6C273CDDB+3640043]
+	GetHandleVerifier [0x00007FF6C248B7F6+816390]
+	(No symbol) [0x00007FF6C234B7AF]
+	(No symbol) [0x00007FF6C23475D4]
+	(No symbol) [0x00007FF6C2347770]
+	(No symbol) [0x00007FF6C23365CF]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[09.10.24 09:45:19]OP1U/00004701/2	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF6C23CB675+29573]
+	(No symbol) [0x00007FF6C23404A0]
+	(No symbol) [0x00007FF6C21FB6EA]
+	(No symbol) [0x00007FF6C224F815]
+	(No symbol) [0x00007FF6C224FA6C]
+	(No symbol) [0x00007FF6C229B917]
+	(No symbol) [0x00007FF6C227733F]
+	(No symbol) [0x00007FF6C22986BC]
+	(No symbol) [0x00007FF6C22770A3]
+	(No symbol) [0x00007FF6C22412DF]
+	(No symbol) [0x00007FF6C2242441]
+	GetHandleVerifier [0x00007FF6C26FC5BD+3375821]
+	GetHandleVerifier [0x00007FF6C27479B7+3684039]
+	GetHandleVerifier [0x00007FF6C273CDDB+3640043]
+	GetHandleVerifier [0x00007FF6C248B7F6+816390]
+	(No symbol) [0x00007FF6C234B7AF]
+	(No symbol) [0x00007FF6C23475D4]
+	(No symbol) [0x00007FF6C2347770]
+	(No symbol) [0x00007FF6C23365CF]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[09.10.24 09:45:19]OP1U/00086947/6	- Błąd pobierania wybranych działów księgi: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF6C23CB675+29573]
+	(No symbol) [0x00007FF6C23404A0]
+	(No symbol) [0x00007FF6C21FB6EA]
+	(No symbol) [0x00007FF6C224F815]
+	(No symbol) [0x00007FF6C224FA6C]
+	(No symbol) [0x00007FF6C229B917]
+	(No symbol) [0x00007FF6C227733F]
+	(No symbol) [0x00007FF6C22986BC]
+	(No symbol) [0x00007FF6C22770A3]
+	(No symbol) [0x00007FF6C22412DF]
+	(No symbol) [0x00007FF6C2242441]
+	GetHandleVerifier [0x00007FF6C26FC5BD+3375821]
+	GetHandleVerifier [0x00007FF6C27479B7+3684039]
+	GetHandleVerifier [0x00007FF6C273CDDB+3640043]
+	GetHandleVerifier [0x00007FF6C248B7F6+816390]
+	(No symbol) [0x00007FF6C234B7AF]
+	(No symbol) [0x00007FF6C23475D4]
+	(No symbol) [0x00007FF6C2347770]
+	(No symbol) [0x00007FF6C23365CF]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[10.10.24 09:22:35]BB1B/00000001/4	- Błąd pobierania księgi: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[name="przyciskWydrukZupelny"]"}
+  (Session info: chrome=129.0.6668.90); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF65123B095+29557]
+	(No symbol) [0x00007FF6511AFA50]
+	(No symbol) [0x00007FF65106B56A]
+	(No symbol) [0x00007FF6510BF695]
+	(No symbol) [0x00007FF6510BF8EC]
+	(No symbol) [0x00007FF65110B777]
+	(No symbol) [0x00007FF6510E71CF]
+	(No symbol) [0x00007FF65110851C]
+	(No symbol) [0x00007FF6510E6F33]
+	(No symbol) [0x00007FF6510B116F]
+	(No symbol) [0x00007FF6510B22D1]
+	GetHandleVerifier [0x00007FF65156C96D+3378253]
+	GetHandleVerifier [0x00007FF6515B8497+3688311]
+	GetHandleVerifier [0x00007FF6515AD1CB+3642539]
+	GetHandleVerifier [0x00007FF6512FA6B6+813462]
+	(No symbol) [0x00007FF6511BAB5F]
+	(No symbol) [0x00007FF6511B6B74]
+	(No symbol) [0x00007FF6511B6D10]
+	(No symbol) [0x00007FF6511A5C1F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[10.10.24 09:22:36]BB1B/00000003/8	- Błąd pobierania księgi: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[name="przyciskWydrukZupelny"]"}
+  (Session info: chrome=129.0.6668.90); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF65123B095+29557]
+	(No symbol) [0x00007FF6511AFA50]
+	(No symbol) [0x00007FF65106B56A]
+	(No symbol) [0x00007FF6510BF695]
+	(No symbol) [0x00007FF6510BF8EC]
+	(No symbol) [0x00007FF65110B777]
+	(No symbol) [0x00007FF6510E71CF]
+	(No symbol) [0x00007FF65110851C]
+	(No symbol) [0x00007FF6510E6F33]
+	(No symbol) [0x00007FF6510B116F]
+	(No symbol) [0x00007FF6510B22D1]
+	GetHandleVerifier [0x00007FF65156C96D+3378253]
+	GetHandleVerifier [0x00007FF6515B8497+3688311]
+	GetHandleVerifier [0x00007FF6515AD1CB+3642539]
+	GetHandleVerifier [0x00007FF6512FA6B6+813462]
+	(No symbol) [0x00007FF6511BAB5F]
+	(No symbol) [0x00007FF6511B6B74]
+	(No symbol) [0x00007FF6511B6D10]
+	(No symbol) [0x00007FF6511A5C1F]
+	BaseThreadInitThunk [0x00007FFB90F17374+20]
+	RtlUserThreadStart [0x00007FFB9139CC91+33]
+
+[11.10.24 08:17:05]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00011876.3_1o.html'
+[11.10.24 08:17:05]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00050819.1_1o.html'
+[11.10.24 08:17:15]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00013840.6_1o.html'
+[11.10.24 08:18:25]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=41858): Max retries exceeded with url: /session/36e6963d94b11f8c10e0a2cb877e7f77/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021AC85D40E0>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 08:18:29]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=41859): Max retries exceeded with url: /session/f23b8c02f726eed91b9bd4ca84d3b9fe/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021AC85D4CE0>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 08:18:31]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=41860): Max retries exceeded with url: /session/cdb88e671edfa8f89e7d2a0a191f7fd1/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021AC85D4F50>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:07:03]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00011876.3_1o.html'
+[11.10.24 09:07:04]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00013840.6_1o.html'
+[11.10.24 09:07:05]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: [Errno 2] No such file or directory: 'D:\\Python\\KW - eKW pobieracz\\test/PL1C.00050819.1_1o.html'
+[11.10.24 09:12:27]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42516): Max retries exceeded with url: /session/2381d1520da3edc3df891848c2baa0ed/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000186EBD94740>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:12:29]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42517): Max retries exceeded with url: /session/28634f31e8a31a6b7ddb2f47bbccb3c2/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000186EBD94D40>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:12:32]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42518): Max retries exceeded with url: /session/7bf524d43153d79e29df844588f34157/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000186EBD95370>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:13:53]PL1C/00050819/1	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42666): Max retries exceeded with url: /session/3623601aa9f06a1b2b5b851dd6b40a64/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000027C31F64770>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:13:55]PL1C/00011876/3	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42665): Max retries exceeded with url: /session/1155dc36f69e8f8893edfa0da8a91411/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000027C31F64D10>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:13:57]PL1C/00013840/6	- Błąd pobierania wybranych działów księgi: HTTPConnectionPool(host='localhost', port=42664): Max retries exceeded with url: /session/a38626a2f4d660ffb9001e7663d5349a/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000027C31F65340>: Failed to establish a new connection: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia'))
+[11.10.24 09:15:44]PL1C/00011876/3	- Błąd łączenia działów księgi: 'NoneType' object has no attribute 'seek'
+[11.10.24 09:15:44]PL1C/00013840/6	- Błąd łączenia działów księgi: 'NoneType' object has no attribute 'seek'
+[11.10.24 09:15:44]PL1C/00050819/1	- Błąd łączenia działów księgi: 'NoneType' object has no attribute 'seek'
