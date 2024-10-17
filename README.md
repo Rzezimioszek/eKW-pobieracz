@@ -10,17 +10,17 @@ UWAGA !
 Program oparty na QT jest dalej rozwijany w branch Legacy 
 https://github.com/Rzezimioszek/eKW-pobieracz/tree/legacy
 
-Aktualny plik exe znajdziesz tu: https://github.com/Rzezimioszek/eKW-pobieracz/releases/tag/1.2.01
+Aktualny plik exe znajdziesz tu: https://github.com/Rzezimioszek/eKW-pobieracz/releases
 
 ---
 
-W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją skończyć.
+![Animation](https://github.com/user-attachments/assets/fa45b141-715d-4cff-8413-1e14af9f5a1d)
 
 ---
 
 # Do zrobienia
 
-* UI na bazie framwork FLET
+done - UI na bazie framwork FLET
 * Zapis json/xlsx dla wszytskich działów
 * Kolejne wyjątki obsługi przeglądarki
 * Rozpoczecie pobierania o zaplanowanym czasie
@@ -28,9 +28,17 @@ W main pojawi się wersja oparta na UI FLET. Kiedy? Kiedy będę miał czas ją 
 * Optymalizacja dla urządzeń z mniejszym Ram oraz Rom
 * Działanie na tych samych oknach
 * CLI
-* lista z wyborem sądu
+done - lista z wyborem sądu
 * nagrać tutorial z korzystania na YT
-* aktualizacja pdf z instrukcją
+done/todo -  aktualizacja pdf z instrukcją
+* switch: pobieranie zawsze treści zupełnej
+* Przebudowa Stop i Pauza
+* spojny casting w nazwach
+* zmiejszyć primitive obssesion
+* sprawdzenie i walidacja listy
+* głębsze opisy błedów
+* przebudowa zapisu CSV
+* lepszy zapis html
   
 ---
 
