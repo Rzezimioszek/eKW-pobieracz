@@ -1,5 +1,7 @@
 # eKW pobieraczek (eKW-pobieracz)
 
+Aby korzystać z programu należy posiadać własną listę numerów KW lub utworzyć sobie taką za pomocą programu, utworzona lista jest matematycznie obliczną potencjalną listą dostępnych numerów KW i po stronie użytkownika leży weryfikacja numerów KW, nie każdy numer musi być wykorzystywany.
+
 Wątek na wykopie https://wykop.pl/tag/ekwpobieraczek
 Program służący do masowego pobierania ksiąg wieczystych z serwisu ekw.ms.gov.pl
 Plik EXE po prawej stronie w Released
